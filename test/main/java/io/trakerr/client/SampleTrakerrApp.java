@@ -3,6 +3,8 @@ package io.trakerr.client;
 import io.trakerr.ApiException;
 import io.trakerr.ApiResponse;
 import io.trakerr.model.AppEvent;
+import io.trakerr.model.CustomData;
+import io.trakerr.model.CustomStringData;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

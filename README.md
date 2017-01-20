@@ -58,7 +58,31 @@ Sending an exception programmatically requires a TrakerrClient to send the error
         }
 ```
 
-### Option-3: Send a non-exception (any event) programmatically
+### Option-3: Send an exception programmatically but with custom parameters
+
+Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this.
+
+```java
+        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development", "1.0");
+
+        try {
+            throw new Exception("This is a test exception.");
+        } catch (Exception e) {
+            // First argument is the classification ("Error", "Warn" etc.), you can also pass a custom classification if required
+            AppEvent exceptionEvent = client.createAppEventFromException("Error", e);
+
+            CustomData customProperties = new CustomData();
+            CustomStringData stringData = new CustomStringData();
+            stringData.customData1("Some custom data");
+            customProperties.setStringData(stringData);
+            exceptionEvent.setCustomProperties(customProperties);
+
+            // send the event
+            client.sendEvent(exceptionEvent);
+        }
+```
+
+### Option-4: Send a non-exception (any event) programmatically
 
 ```java
         TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development", "1.0");
@@ -76,5 +100,5 @@ Sending an exception programmatically requires a TrakerrClient to send the error
 
 ## Documentation for Models
 
- - [AppEvent](generated/docs/AppEvent.md)
+ - [AppEvent](https://github.com/trakerr-io/trakerr-java/blob/master/generated/docs/AppEvent.md)
 

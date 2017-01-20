@@ -96,17 +96,28 @@ public class TrakerrClient {
     }
 
     /**
+     * Use this to bootstrap a new AppEvent object with the supplied classification and the exception
+     *
+     * @param classification Classification (Error/Warning/Info/Debug or custom string), defaults to "Error".
+     * @param t      Exception to create the AppEvent from
+     * @return Newly created AppEvent
+     */
+    public AppEvent createAppEventFromException(String classification, Throwable t) {
+        AppEvent event = createAppEvent(classification, t.getClass().getName(), t.getMessage());
+        event.setEventStacktrace(EventTraceBuilder.getEventTraces(t));;
+        return event;
+    }
+
+    /**
      * Send exception to Trakerr by creating a new AppEvent and populating the stack trace.
      *
      * @param classification Classification like Error/Warn/Info/Debug
-     * @param e exception
+     * @param t exception
      * @throws RuntimeException when an error occurs sending the exception
      */
-    public void sendException(String classification, Throwable e) {
-        AppEvent event = createAppEvent(classification, e.getClass().getName(), e.getMessage());
-        event.setEventStacktrace(EventTraceBuilder.getEventTraces(e));;
+    public void sendException(String classification, Throwable t) {
         try {
-            sendEvent(event);
+            sendEvent(createAppEventFromException(classification, t));
         } catch (ApiException apiException) {
             throw new RuntimeException(apiException.getMessage(), apiException);
         }

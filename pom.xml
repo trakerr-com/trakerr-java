@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <description>trakerr.io java client -- Send your analytics events to trakerr.io using this library.</description>
-  <url>https://github.com/trakerr/trakerr-java</url>
+  <url>https://github.com/trakerr-io/trakerr-java</url>
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>

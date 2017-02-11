@@ -95,8 +95,39 @@ Sending an exception programmatically requires a TrakerrClient to send the error
         } catch (ApiException e) {
             e.printStackTrace();
         }
-
 ```
+
+## About TrakerrClient's constructor
+`TrakerClient` has an overloaded constructor. The first only asks for the necessary items to send an event:
+
+```java
+public TrakerrClient(String apiKey, String contextAppVersion, String contextEnvName, String contextEnvVersion)
+```
+Every arugment other than API key has a default value if you pass `null`. The second call will expose all the variables:
+
+```java
+public TrakerrClient(String apiKey, String url, String contextAppVersion,
+String contextEnvName, String contextEnvVersion, String contextEnvHostname,
+String contextAppOS, String contextAppOSVersion, String contextDataCenter,
+String contextDataCenterRegion)
+```
+
+Once again, every arugment has a default value if passed `null`. Below is a table with all of the arugments:
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**api_key** | **str** | Specify the API key for this application | [Required argument]
+**url_path** | **str** | (optional) URL to the Trakerr host. | [optional if passed `null`] 
+**context_app_version** | **str** | (optional) Application version. | [optional if passed `null`] Defaults to 1.0.
+**context_env_name** | **str** | (optional) Environment name like "development", "staging", "production". | [optional if passed `null`] Default Value: "develoment".
+**context_env_version** | **str** | (optional) Environment version | [optional if passed `null`]
+**context_env_hostname** | **str** | (optional) Hostname of the environment | [optional if passed `null`] 
+**context_app_os** | **str** | (optional) Operating system. | [optional if passed `null`]
+**context_app_os_version** | **str** | (optional)  operating system version. | [optional if passed `null`]
+**context_data_center** | **str** | (optional) Data center the application is running on or connected to. | [optional if passed `null`] 
+**context_data_center_region** | **str** | (optional) Data center region. | [optional if passed `null`]
+
+
 
 ## Documentation for Models
 

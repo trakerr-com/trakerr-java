@@ -103,7 +103,7 @@ Sending an exception programmatically requires a TrakerrClient to send the error
 ```java
 public TrakerrClient(String apiKey, String contextAppVersion, String contextEnvName, String contextEnvVersion)
 ```
-Every arugment other than API key has a default value if you pass `null`. The second call will expose all the variables:
+Every argument other than API key has a default value if you pass `null`. The second call will expose all the variables:
 
 ```java
 public TrakerrClient(String apiKey, String url, String contextAppVersion,
@@ -112,7 +112,7 @@ String contextAppOS, String contextAppOSVersion, String contextDataCenter,
 String contextDataCenterRegion)
 ```
 
-Once again, every arugment has a default value if passed `null`. Below is a table with all of the arugments:
+Once again, every arguments has a default value if passed `null`. Below is a table with all of the arguments:
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

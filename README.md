@@ -116,16 +116,16 @@ Once again, every arguments has a default value if passed `null`. Below is a tab
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**api_key** | **str** | Specify the API key for this application | [Required argument]
-**url_path** | **str** | (optional) URL to the Trakerr host. | [optional if passed `null`] 
-**context_app_version** | **str** | (optional) Application version. | [optional if passed `null`] Defaults to 1.0.
-**context_env_name** | **str** | (optional) Environment name like "development", "staging", "production". | [optional if passed `null`] Default Value: "develoment".
-**context_env_version** | **str** | (optional) Environment version | [optional if passed `null`]
-**context_env_hostname** | **str** | (optional) Hostname of the environment | [optional if passed `null`] 
-**context_app_os** | **str** | (optional) Operating system. | [optional if passed `null`]
-**context_app_os_version** | **str** | (optional)  operating system version. | [optional if passed `null`]
-**context_data_center** | **str** | (optional) Data center the application is running on or connected to. | [optional if passed `null`] 
-**context_data_center_region** | **str** | (optional) Data center region. | [optional if passed `null`]
+**apiKey** | **str** | Specify the API key for this application | [Required argument]
+**url** | **str** | (optional) URL to the Trakerr host. | [optional if passed `null`] 
+**contextAppVersion** | **str** | (optional) Application version. | [optional if passed `null`] Defaults to 1.0.
+**contextEnvName** | **str** | (optional) Environment name like "development", "staging", "production". | [optional if passed `null`] Default Value: "develoment".
+**contextEnvVersion** | **str** | (optional) Environment version | [optional if passed `null`]
+**contextEnvHostname** | **str** | (optional) Hostname of the environment | [optional if passed `null`] 
+**contextAppOS** | **str** | (optional) Operating system. | [optional if passed `null`]
+**contextAppOSVersion** | **str** | (optional)  operating system version. | [optional if passed `null`]
+**contextDataCenter** | **str** | (optional) Data center the application is running on or connected to. | [optional if passed `null`] 
+**contextDataCenterRegion** | **str** | (optional) Data center region. | [optional if passed `null`]
 
 
 

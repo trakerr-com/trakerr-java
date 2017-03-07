@@ -150,6 +150,7 @@ public class TrakerrClient {
      * Send the AppEvent to Trakerr. If any of the parameters supplied in the constructor are not present, this will auto-populate those members on the supplied event before sending the event to Trakerr.
      *
      * @param appEvent The event to send
+     * @return The response from the server.
      */
     public ApiResponse<Void> sendEvent(AppEvent appEvent) throws ApiException {
         // fill defaults if not overridden in the AppEvent being passed
@@ -162,6 +163,7 @@ public class TrakerrClient {
      * Send the AppEvent to Trakerr. If any of the parameters supplied in the constructor are not present, this will auto-populate those members on the supplied event before sending the event to Trakerr.
      *
      * @param appEvent The event to send
+     * @return The response from the server.
      */
     public Call sendEventAsync(AppEvent appEvent, ApiCallback<Void> callback) throws ApiException {
         // fill defaults if not overridden in the appEvent being passed

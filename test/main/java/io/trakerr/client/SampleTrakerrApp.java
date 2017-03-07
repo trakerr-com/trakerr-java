@@ -22,7 +22,7 @@ public class SampleTrakerrApp {
         // create a client
         TrakerrClient client = new TrakerrClient("<your api key>", "1.0", "development", "1.0");
 
-        /*
+        
         // Option-2: Throw exception.
         try {
             throw new Exception("This is a test exception.");
@@ -31,7 +31,7 @@ public class SampleTrakerrApp {
         }
 
         // Option-3: Send an event (including non-exceptions) manually.
-        AppEvent event = client.createAppEvent("Error", "System.Exception", "Some message");
+        AppEvent event = client.createAppEvent("Info", "System.Exception", "Some message");
         try {
             ApiResponse<Void> response = client.sendEvent(event);
 
@@ -39,7 +39,5 @@ public class SampleTrakerrApp {
         } catch (ApiException e) {
             e.printStackTrace();
         }
-        */
-
     }
 }

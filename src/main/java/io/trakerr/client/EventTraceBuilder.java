@@ -8,6 +8,12 @@ import io.trakerr.model.Stacktrace;
 import java.util.List;
 
 class EventTraceBuilder {
+	
+	/**
+	 * Takes the thrown error and parses the StackTrace.
+	 * @param e Error (usually a derivitive class of Exception) to parse.
+	 * @return StackTrace object which is a list of InnerStackTraces.
+	 */
     static Stacktrace getEventTraces(Throwable e) {
         if (e == null) return null;
         Stacktrace traces = new Stacktrace();
@@ -15,6 +21,11 @@ class EventTraceBuilder {
         return traces;
     }
 
+    /**
+     * Takes a StackTrace object and adds a new trace to it with the parse exception.
+     * @param traces The list of InnerStackTraces to add to.
+     * @param exception The Exception to parse.
+     */
     private static void addStackTraces(List<InnerStackTrace> traces, Throwable exception) {
         InnerStackTrace newTrace = new InnerStackTrace();
 
@@ -28,6 +39,11 @@ class EventTraceBuilder {
         }
     }
 
+    /**
+     * Get each line in the Exception, parse it, and add it to a StackTraceLines. 
+     * @param exception Exception to parse.
+     * @return Returns a list of StackTraceLine (StackTraceLine object).
+     */
     private static StackTraceLines getEventTraceLines(Throwable exception) {
         StackTraceLines lines = new StackTraceLines();
         if (exception == null || exception.getStackTrace().length == 0) {

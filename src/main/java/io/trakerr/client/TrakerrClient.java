@@ -31,11 +31,8 @@ public class TrakerrClient {
      * @param contextEnvName          (optional) environment name like "development", "staging", "production", defaults to "development"
      * @param contextEnvVersion       (optional) environment version
      */
-    public TrakerrClient(String apiKey, String contextAppVersion, String contextEnvName, String contextEnvVersion) {
-        this.apiKey = apiKey;
-        this.contextAppVersion = contextAppVersion == null ? "1.0" : contextAppVersion;
-        this.contextEnvName = contextEnvName == null ? "development" : contextEnvName;
-        this.contextEnvVersion = contextEnvVersion;
+    public TrakerrClient(String apiKey, String contextAppVersion, String contextEnvName) {
+    	this(apiKey, null, contextAppVersion, contextEnvName, null, null, null, null, null, null);
     }
 
     /**
@@ -52,26 +49,34 @@ public class TrakerrClient {
      * @param contextDataCenter       (optional) data center
      * @param contextDataCenterRegion (optional) data center region
      */
-    public TrakerrClient(String apiKey, String url, String contextAppVersion, String contextEnvName, String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion, String contextDataCenter, String contextDataCenterRegion) {
-        this.apiKey = apiKey;
-        this.contextAppVersion = contextAppVersion == null ? "1.0" : contextAppVersion;
-        this.contextEnvName = contextEnvName == null ? "development" : contextEnvName;
-        this.contextEnvVersion = contextEnvVersion;
+    private TrakerrClient(String apiKey, String url, String contextAppVersion, String contextEnvName, String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion, String contextDataCenter, String contextDataCenterRegion) {
+        this.setApiKey(apiKey);
+        this.setContextAppVersion(contextAppVersion == null ? "1.0" : contextAppVersion);
+        this.setContextEnvName(contextEnvName == null ? "development" : contextEnvName);
+        this.setContextEnvVersion(contextEnvVersion);
+        
+        if (this.getContextEnvVersion() == null){
+        	try{
+        		this.setContextEnvVersion(System.getProperty("java.vendor") + " " +System.getProperty("java.version"));
+        	} catch (Exception e) {
+        		this.setContextEnvVersion(contextEnvVersion);
+        	}
+        }
         try {
-            this.contextEnvHostname = contextEnvHostname == null ? InetAddress.getLocalHost().getHostName() : contextEnvHostname;
+            this.setContextEnvHostname(contextEnvHostname == null ? InetAddress.getLocalHost().getHostName() : contextEnvHostname);
         } catch (UnknownHostException ignored) {
         }
-        this.contextAppOS = contextAppOS == null ? System.getProperty("os.name") : contextAppOS;
-        this.contextAppOSVersion = contextAppOSVersion == null ? System.getProperty("os.version") : contextAppOSVersion;
-        this.contextDataCenter = contextDataCenter;
-        this.contextDataCenterRegion = contextDataCenterRegion;
+        this.setContextAppOS(contextAppOS == null ? System.getProperty("os.name") : contextAppOS);
+        this.setContextAppOSVersion(contextAppOSVersion == null ? System.getProperty("os.version") : contextAppOSVersion);
+        this.setContextDataCenter(contextDataCenter);
+        this.setContextDataCenterRegion(contextDataCenterRegion);
 
         ApiClient client = new ApiClient();
         if (url != null) {
             client.setBasePath(url);
         }
 
-        this.eventsApi = new EventsApi(client);
+        this.setEventsApi(new EventsApi(client));
     }
 
     /**
@@ -150,7 +155,7 @@ public class TrakerrClient {
         // fill defaults if not overridden in the AppEvent being passed
         FillDefaults(appEvent);
 
-        return this.eventsApi.eventsPostWithHttpInfo(appEvent);
+        return this.getEventsApi().eventsPostWithHttpInfo(appEvent);
     }
 
     /**
@@ -162,31 +167,177 @@ public class TrakerrClient {
         // fill defaults if not overridden in the appEvent being passed
         FillDefaults(appEvent);
 
-        return eventsApi.eventsPostAsync(appEvent, callback);
+        return getEventsApi().eventsPostAsync(appEvent, callback);
     }
 
+    /**
+     * Takes an AppEvent and fills any empty field with the current client defaults.
+     * @param appEvent The AppEvent to fill.
+     * @return The AppEvent object after all of it's properties have been filled.
+     */
     private AppEvent FillDefaults(AppEvent appEvent) {
-        if (appEvent.getApiKey() == null) appEvent.setApiKey(this.apiKey);
+        if (appEvent.getApiKey() == null) appEvent.setApiKey(this.getApiKey());
         ;
 
-        if (appEvent.getContextAppVersion() == null) appEvent.setContextAppVersion(this.contextAppVersion);
+        if (appEvent.getContextAppVersion() == null) appEvent.setContextAppVersion(this.getContextAppVersion());
 
-        if (appEvent.getContextEnvName() == null) appEvent.setContextEnvName(this.contextEnvName);
-        if (appEvent.getContextEnvVersion() == null) appEvent.setContextEnvVersion(this.contextEnvVersion);
-        if (appEvent.getContextEnvHostname() == null) appEvent.setContextEnvHostname(this.contextEnvHostname);
+        if (appEvent.getContextEnvName() == null) appEvent.setContextEnvName(this.getContextEnvName());
+        if (appEvent.getContextEnvVersion() == null) appEvent.setContextEnvVersion(this.getContextEnvVersion());
+        if (appEvent.getContextEnvHostname() == null) appEvent.setContextEnvHostname(this.getContextEnvHostname());
 
         if (appEvent.getContextAppOS() == null) {
-            appEvent.setContextAppOS(this.contextAppOS);
-            appEvent.setContextAppOSVersion(this.contextAppOSVersion);
+            appEvent.setContextAppOS(this.getContextAppOS());
+            appEvent.setContextAppOSVersion(this.getContextAppOSVersion());
         }
 
-        if (appEvent.getContextDataCenter() == null) appEvent.setContextDataCenter(contextDataCenter);
-        if (appEvent.getContextDataCenterRegion() == null) appEvent.setContextDataCenterRegion(contextDataCenterRegion);
+        if (appEvent.getContextDataCenter() == null) appEvent.setContextDataCenter(getContextDataCenter());
+        if (appEvent.getContextDataCenterRegion() == null) appEvent.setContextDataCenterRegion(getContextDataCenterRegion());
 
         if (appEvent.getEventTime() == null) appEvent.setEventTime(System.currentTimeMillis());
 
         return appEvent;
     }
+    
+    //Getters and setters for properties follow.
+    
+	/**
+	 * @return the apiKey
+	 */
+	public String getApiKey() {
+		return apiKey;
+	}
 
+	/**
+	 * @param apiKey the apiKey to set
+	 */
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
+	}
+
+	/**
+	 * @return the contextAppVersion
+	 */
+	public String getContextAppVersion() {
+		return contextAppVersion;
+	}
+
+	/**
+	 * @param contextAppVersion the contextAppVersion to set
+	 */
+	public void setContextAppVersion(String contextAppVersion) {
+		this.contextAppVersion = contextAppVersion;
+	}
+
+	/**
+	 * @return the contextEnvName
+	 */
+	public String getContextEnvName() {
+		return contextEnvName;
+	}
+
+	/**
+	 * @param contextEnvName the contextEnvName to set
+	 */
+	public void setContextEnvName(String contextEnvName) {
+		this.contextEnvName = contextEnvName;
+	}
+
+	/**
+	 * @return the contextEnvVersion
+	 */
+	public String getContextEnvVersion() {
+		return contextEnvVersion;
+	}
+
+	/**
+	 * @param contextEnvVersion the contextEnvVersion to set
+	 */
+	public void setContextEnvVersion(String contextEnvVersion) {
+		this.contextEnvVersion = contextEnvVersion;
+	}
+
+	/**
+	 * @return the contextEnvHostname
+	 */
+	public String getContextEnvHostname() {
+		return contextEnvHostname;
+	}
+
+	/**
+	 * @param contextEnvHostname the contextEnvHostname to set
+	 */
+	public void setContextEnvHostname(String contextEnvHostname) {
+		this.contextEnvHostname = contextEnvHostname;
+	}
+
+	/**
+	 * @return the contextAppOS
+	 */
+	public String getContextAppOS() {
+		return contextAppOS;
+	}
+
+	/**
+	 * @param contextAppOS the contextAppOS to set
+	 */
+	public void setContextAppOS(String contextAppOS) {
+		this.contextAppOS = contextAppOS;
+	}
+
+	/**
+	 * @return the contextAppOSVersion
+	 */
+	public String getContextAppOSVersion() {
+		return contextAppOSVersion;
+	}
+
+	/**
+	 * @param contextAppOSVersion the contextAppOSVersion to set
+	 */
+	public void setContextAppOSVersion(String contextAppOSVersion) {
+		this.contextAppOSVersion = contextAppOSVersion;
+	}
+
+	/**
+	 * @return the contextDataCenter
+	 */
+	public String getContextDataCenter() {
+		return contextDataCenter;
+	}
+
+	/**
+	 * @param contextDataCenter the contextDataCenter to set
+	 */
+	public void setContextDataCenter(String contextDataCenter) {
+		this.contextDataCenter = contextDataCenter;
+	}
+
+	/**
+	 * @return the contextDataCenterRegion
+	 */
+	public String getContextDataCenterRegion() {
+		return contextDataCenterRegion;
+	}
+
+	/**
+	 * @param contextDataCenterRegion the contextDataCenterRegion to set
+	 */
+	public void setContextDataCenterRegion(String contextDataCenterRegion) {
+		this.contextDataCenterRegion = contextDataCenterRegion;
+	}
+
+	/**
+	 * @return the eventsApi
+	 */
+	public EventsApi getEventsApi() {
+		return eventsApi;
+	}
+
+	/**
+	 * @param eventsApi the eventsApi to set
+	 */
+	public void setEventsApi(EventsApi eventsApi) {
+		this.eventsApi = eventsApi;
+	}
 
 }

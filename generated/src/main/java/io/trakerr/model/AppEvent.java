@@ -36,10 +36,44 @@ import io.trakerr.model.Stacktrace;
 /**
  * AppEvent
  */
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-01-19T10:48:29.731-08:00")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-03-13T16:49:29.032-07:00")
 public class AppEvent   {
   @SerializedName("apiKey")
   private String apiKey = null;
+
+  /**
+   * (optional) Logging level, one of 'debug','info','warning','error', 'fatal', defaults to 'error'
+   */
+  public enum LogLevelEnum {
+    @SerializedName("debug")
+    DEBUG("debug"),
+    
+    @SerializedName("info")
+    INFO("info"),
+    
+    @SerializedName("warning")
+    WARNING("warning"),
+    
+    @SerializedName("error")
+    ERROR("error"),
+    
+    @SerializedName("fatal")
+    FATAL("fatal");
+
+    private String value;
+
+    LogLevelEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+  }
+
+  @SerializedName("logLevel")
+  private LogLevelEnum logLevel = null;
 
   @SerializedName("classification")
   private String classification = null;
@@ -65,8 +99,14 @@ public class AppEvent   {
   @SerializedName("contextAppVersion")
   private String contextAppVersion = null;
 
+  @SerializedName("deploymentStage")
+  private String deploymentStage = null;
+
   @SerializedName("contextEnvName")
   private String contextEnvName = null;
+
+  @SerializedName("contextEnvLanguage")
+  private String contextEnvLanguage = null;
 
   @SerializedName("contextEnvVersion")
   private String contextEnvVersion = null;
@@ -116,16 +156,34 @@ public class AppEvent   {
     this.apiKey = apiKey;
   }
 
+  public AppEvent logLevel(LogLevelEnum logLevel) {
+    this.logLevel = logLevel;
+    return this;
+  }
+
+   /**
+   * (optional) Logging level, one of 'debug','info','warning','error', 'fatal', defaults to 'error'
+   * @return logLevel
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) Logging level, one of 'debug','info','warning','error', 'fatal', defaults to 'error'")
+  public LogLevelEnum getLogLevel() {
+    return logLevel;
+  }
+
+  public void setLogLevel(LogLevelEnum logLevel) {
+    this.logLevel = logLevel;
+  }
+
   public AppEvent classification(String classification) {
     this.classification = classification;
     return this;
   }
 
    /**
-   * one of 'debug','info','warning','error' or a custom string
+   * (optional) one of 'error' or a custom string for non-errors, defaults to 'error'
    * @return classification
   **/
-  @ApiModelProperty(example = "null", required = true, value = "one of 'debug','info','warning','error' or a custom string")
+  @ApiModelProperty(example = "null", required = true, value = "(optional) one of 'error' or a custom string for non-errors, defaults to 'error'")
   public String getClassification() {
     return classification;
   }
@@ -140,10 +198,10 @@ public class AppEvent   {
   }
 
    /**
-   * type or event or error (eg. NullPointerException)
+   * type of the event or error (eg. NullPointerException)
    * @return eventType
   **/
-  @ApiModelProperty(example = "null", required = true, value = "type or event or error (eg. NullPointerException)")
+  @ApiModelProperty(example = "null", required = true, value = "type of the event or error (eg. NullPointerException)")
   public String getEventType() {
     return eventType;
   }
@@ -260,22 +318,58 @@ public class AppEvent   {
     this.contextAppVersion = contextAppVersion;
   }
 
+  public AppEvent deploymentStage(String deploymentStage) {
+    this.deploymentStage = deploymentStage;
+    return this;
+  }
+
+   /**
+   * (optional) deployment stage, one of 'development','staging','production' or a custom string
+   * @return deploymentStage
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) deployment stage, one of 'development','staging','production' or a custom string")
+  public String getDeploymentStage() {
+    return deploymentStage;
+  }
+
+  public void setDeploymentStage(String deploymentStage) {
+    this.deploymentStage = deploymentStage;
+  }
+
   public AppEvent contextEnvName(String contextEnvName) {
     this.contextEnvName = contextEnvName;
     return this;
   }
 
    /**
-   * (optional) one of 'development','staging','production' or a custom string
+   * (optional) environment name (like 'cpython' or 'ironpython' etc.)
    * @return contextEnvName
   **/
-  @ApiModelProperty(example = "null", value = "(optional) one of 'development','staging','production' or a custom string")
+  @ApiModelProperty(example = "null", value = "(optional) environment name (like 'cpython' or 'ironpython' etc.)")
   public String getContextEnvName() {
     return contextEnvName;
   }
 
   public void setContextEnvName(String contextEnvName) {
     this.contextEnvName = contextEnvName;
+  }
+
+  public AppEvent contextEnvLanguage(String contextEnvLanguage) {
+    this.contextEnvLanguage = contextEnvLanguage;
+    return this;
+  }
+
+   /**
+   * (optional) language (like 'python' or 'c#' etc.)
+   * @return contextEnvLanguage
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) language (like 'python' or 'c#' etc.)")
+  public String getContextEnvLanguage() {
+    return contextEnvLanguage;
+  }
+
+  public void setContextEnvLanguage(String contextEnvLanguage) {
+    this.contextEnvLanguage = contextEnvLanguage;
   }
 
   public AppEvent contextEnvVersion(String contextEnvVersion) {
@@ -469,6 +563,7 @@ public class AppEvent   {
     }
     AppEvent appEvent = (AppEvent) o;
     return Objects.equals(this.apiKey, appEvent.apiKey) &&
+        Objects.equals(this.logLevel, appEvent.logLevel) &&
         Objects.equals(this.classification, appEvent.classification) &&
         Objects.equals(this.eventType, appEvent.eventType) &&
         Objects.equals(this.eventMessage, appEvent.eventMessage) &&
@@ -477,7 +572,9 @@ public class AppEvent   {
         Objects.equals(this.eventUser, appEvent.eventUser) &&
         Objects.equals(this.eventSession, appEvent.eventSession) &&
         Objects.equals(this.contextAppVersion, appEvent.contextAppVersion) &&
+        Objects.equals(this.deploymentStage, appEvent.deploymentStage) &&
         Objects.equals(this.contextEnvName, appEvent.contextEnvName) &&
+        Objects.equals(this.contextEnvLanguage, appEvent.contextEnvLanguage) &&
         Objects.equals(this.contextEnvVersion, appEvent.contextEnvVersion) &&
         Objects.equals(this.contextEnvHostname, appEvent.contextEnvHostname) &&
         Objects.equals(this.contextAppBrowser, appEvent.contextAppBrowser) &&
@@ -492,7 +589,7 @@ public class AppEvent   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(apiKey, classification, eventType, eventMessage, eventTime, eventStacktrace, eventUser, eventSession, contextAppVersion, contextEnvName, contextEnvVersion, contextEnvHostname, contextAppBrowser, contextAppBrowserVersion, contextAppOS, contextAppOSVersion, contextDataCenter, contextDataCenterRegion, customProperties, customSegments);
+    return Objects.hash(apiKey, logLevel, classification, eventType, eventMessage, eventTime, eventStacktrace, eventUser, eventSession, contextAppVersion, deploymentStage, contextEnvName, contextEnvLanguage, contextEnvVersion, contextEnvHostname, contextAppBrowser, contextAppBrowserVersion, contextAppOS, contextAppOSVersion, contextDataCenter, contextDataCenterRegion, customProperties, customSegments);
   }
 
   @Override
@@ -501,6 +598,7 @@ public class AppEvent   {
     sb.append("class AppEvent {\n");
     
     sb.append("    apiKey: ").append(toIndentedString(apiKey)).append("\n");
+    sb.append("    logLevel: ").append(toIndentedString(logLevel)).append("\n");
     sb.append("    classification: ").append(toIndentedString(classification)).append("\n");
     sb.append("    eventType: ").append(toIndentedString(eventType)).append("\n");
     sb.append("    eventMessage: ").append(toIndentedString(eventMessage)).append("\n");
@@ -509,7 +607,9 @@ public class AppEvent   {
     sb.append("    eventUser: ").append(toIndentedString(eventUser)).append("\n");
     sb.append("    eventSession: ").append(toIndentedString(eventSession)).append("\n");
     sb.append("    contextAppVersion: ").append(toIndentedString(contextAppVersion)).append("\n");
+    sb.append("    deploymentStage: ").append(toIndentedString(deploymentStage)).append("\n");
     sb.append("    contextEnvName: ").append(toIndentedString(contextEnvName)).append("\n");
+    sb.append("    contextEnvLanguage: ").append(toIndentedString(contextEnvLanguage)).append("\n");
     sb.append("    contextEnvVersion: ").append(toIndentedString(contextEnvVersion)).append("\n");
     sb.append("    contextEnvHostname: ").append(toIndentedString(contextEnvHostname)).append("\n");
     sb.append("    contextAppBrowser: ").append(toIndentedString(contextAppBrowser)).append("\n");

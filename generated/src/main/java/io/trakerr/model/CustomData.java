@@ -37,7 +37,7 @@ import io.trakerr.model.CustomStringData;
  * (optional) Custom string or double data to submit along with the event. This data can then be used in the Trakerr UI to view segmented data.
  */
 @ApiModel(description = "(optional) Custom string or double data to submit along with the event. This data can then be used in the Trakerr UI to view segmented data.")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-03-13T16:49:29.032-07:00")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-01-19T10:48:29.731-08:00")
 public class CustomData   {
   @SerializedName("stringData")
   private CustomStringData stringData = null;

@@ -27,11 +27,12 @@ public class SampleTrakerrApp {
         try {
             throw new Exception("This is a test exception.");
         } catch(Exception e) {
-            client.sendException("Error", e);
+            client.sendException("Error", null, e);
+            System.out.println("Test exception sent.");
         }
 
         // Option-3: Send an event (including non-exceptions) manually.
-        AppEvent event = client.createAppEvent("Info", "System.Exception", "Some message");
+        AppEvent event = client.createAppEvent("Info", "User got to this state.","System.Exception", "Some message");
         try {
             ApiResponse<Void> response = client.sendEvent(event);
 

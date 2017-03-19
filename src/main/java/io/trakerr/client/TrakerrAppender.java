@@ -33,9 +33,9 @@ public class TrakerrAppender extends AppenderSkeleton {
     protected void append(LoggingEvent loggingEvent) {
         if (!this.enabled) return;
 
-        // get classification in propercase (first letter capitalized)
-        String classification = loggingEvent.getLevel().toString().toLowerCase();
-        classification = classification.substring(0, 1).toUpperCase() + classification.substring(1);
+        // get logLevel in propercase (first letter capitalized)
+        String logLevel = loggingEvent.getLevel().toString().toLowerCase();
+        logLevel = logLevel.substring(0, 1).toUpperCase() + logLevel.substring(1);
 
         // get event type
         ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
@@ -43,7 +43,7 @@ public class TrakerrAppender extends AppenderSkeleton {
         String eventType = throwable == null ? loggingEvent.getLoggerName() : throwable.getClass().getName();
 
         // create app event
-        AppEvent event = this.trakerrClient.createAppEvent(classification, eventType, loggingEvent.getRenderedMessage());
+        AppEvent event = this.trakerrClient.createAppEvent(logLevel, null, eventType, loggingEvent.getRenderedMessage());
 
         // build the stack trace
         event.setEventStacktrace(EventTraceBuilder.getEventTraces(throwable));

@@ -8,12 +8,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- *
  * Client to create and send events to Trakerr.
  **/
 public class TrakerrClient {
     private String apiKey;
     private String contextAppVersion;
+    private String contextDevelopmentStage;
+    private String contextEnvLanguage;
     private String contextEnvName;
     private String contextEnvVersion;
     private String contextEnvHostname;
@@ -26,42 +27,42 @@ public class TrakerrClient {
     /**
      * Initialize a new instance of TrakerrClient with specified options. If null is passed to any of the optional parameters, the defaults are used.
      *
-     * @param apiKey                  (required) Specify the API key for this application
-     * @param contextAppVersion       (optional) application version, defaults to 1.0
-     * @param contextEnvName          (optional) environment name like "development", "staging", "production", defaults to "development"
-     * @param contextEnvVersion       (optional) environment version
+     * @param apiKey                  (required) Specify the API key for this application.
+     * @param contextAppVersion       (optional) application version, defaults to 1.0.
+     * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
      */
-    public TrakerrClient(String apiKey, String contextAppVersion, String contextEnvName) {
-    	this(apiKey, null, contextAppVersion, contextEnvName, null, null, null, null, null, null);
+    public TrakerrClient(String apiKey, String contextAppVersion, String contextDevelopmentStage) {
+        this(apiKey, null, contextAppVersion, contextDevelopmentStage, null, null, null, null, null, null, null);
     }
 
     /**
      * Initialize a new instance of TrakerrClient with specified options. If null is passed to any of the optional parameters, the defaults are used.
      *
-     * @param apiKey                  (required) Specify the API key for this application
-     * @param url                     (optional) URL to the Trakerr host, pass null to use default
-     * @param contextAppVersion       (optional) application version, defaults to 1.0
-     * @param contextEnvName          (optional) environment name like "development", "staging", "production", defaults to "development"
-     * @param contextEnvVersion       (optional) environment version
-     * @param contextEnvHostname      (optional) hostname of the environment
-     * @param contextAppOS            (optional) operating system
-     * @param contextAppOSVersion     (optional) operating system version
-     * @param contextDataCenter       (optional) data center
-     * @param contextDataCenterRegion (optional) data center region
+     * @param apiKey                  (required) Specify the API key for this application.
+     * @param url                     (optional) URL to the Trakerr host, pass null to use default.
+     * @param contextAppVersion       (optional) application version, defaults to 1.0.
+     * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
+     * @param contextEnvName          (optional) runtime interpreter name.
+     * @param contextEnvVersion       (optional) environment version.
+     * @param contextEnvHostname      (optional) hostname of the environment.
+     * @param contextAppOS            (optional) operating system.
+     * @param contextAppOSVersion     (optional) operating system version.
+     * @param contextDataCenter       (optional) data center.
+     * @param contextDataCenterRegion (optional) data center region.
      */
-    private TrakerrClient(String apiKey, String url, String contextAppVersion, String contextEnvName, String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion, String contextDataCenter, String contextDataCenterRegion) {
+    private TrakerrClient(String apiKey, String url, String contextAppVersion, String contextDevelopmentStage, String contextEnvName, String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion, String contextDataCenter, String contextDataCenterRegion) {
         this.setApiKey(apiKey);
         this.setContextAppVersion(contextAppVersion == null ? "1.0" : contextAppVersion);
-        this.setContextEnvName(contextEnvName == null ? "development" : contextEnvName);
-        this.setContextEnvVersion(contextEnvVersion);
-        
-        if (this.getContextEnvVersion() == null){
-        	try{
-        		this.setContextEnvVersion(System.getProperty("java.vendor") + " " +System.getProperty("java.version"));
-        	} catch (Exception e) {
-        		this.setContextEnvVersion(contextEnvVersion);
-        	}
+        this.setContextDevelopmentStage(contextDevelopmentStage == null ? "development" : contextDevelopmentStage);
+        this.setContextEnvLanguage("Java");
+
+        try {
+            this.setContextEnvName(System.getProperty("java.vendor"));
+            this.setContextEnvVersion(System.getProperty("java.version"));
+        } catch (Exception e) {
+            this.setContextEnvVersion(contextEnvVersion);
         }
+
         try {
             this.setContextEnvHostname(contextEnvHostname == null ? InetAddress.getLocalHost().getHostName() : contextEnvHostname);
         } catch (UnknownHostException ignored) {
@@ -80,19 +81,46 @@ public class TrakerrClient {
     }
 
     /**
-     * Use this to bootstrap a new AppEvent object with the supplied classification, event type and message.
+     * Use this to bootstrap a new AppEvent object with the supplied logLevel, event type and message.
      *
-     * @param classification Classification (Error/Warning/Info/Debug or custom string), defaults to "Error".
+     * @param logLevel       Classification (Error/Warning/Info/Debug or custom string), defaults to "Error".
+     * @param classification (optional) Optional descriptor string. defaults to "issue"
      * @param eventType      Type of event (eg. System.Exception), defaults to "unknonwn"
      * @param eventMessage   Message, defaults to "unknown"
      * @return Newly created AppEvent
      */
-    public AppEvent createAppEvent(String classification, String eventType, String eventMessage) {
-        if (classification == null) classification = "Error";
+    public AppEvent createAppEvent(String logLevel, String classification, String eventType, String eventMessage) {
+        if (logLevel == null) logLevel = "Error";
+        if (classification == null) classification = "issue";
         if (eventType == null) eventType = "unknown";
         if (eventMessage == null) eventMessage = "unknown";
 
         AppEvent event = new AppEvent();
+
+        AppEvent.LogLevelEnum level;
+        switch (logLevel.toLowerCase()) {
+            case "debug":
+                level = AppEvent.LogLevelEnum.DEBUG;
+                break;
+
+            case "warning":
+            case "warn":
+                level = AppEvent.LogLevelEnum.WARNING;
+                break;
+
+            case "fatal":
+                level = AppEvent.LogLevelEnum.FATAL;
+                break;
+
+            case "info":
+                level = AppEvent.LogLevelEnum.INFO;
+                break;
+
+            default:
+                level = AppEvent.LogLevelEnum.ERROR;
+                break;
+        }
+        event.setLogLevel(level);
         event.setClassification(classification);
         event.setEventType(eventType);
         event.setEventMessage(eventMessage);
@@ -101,28 +129,30 @@ public class TrakerrClient {
     }
 
     /**
-     * Use this to bootstrap a new AppEvent object with the supplied classification and the exception
+     * Use this to bootstrap a new AppEvent object with the supplied logLevel and the exception
      *
-     * @param classification Classification (Error/Warning/Info/Debug or custom string), defaults to "Error".
-     * @param t      Exception to create the AppEvent from
+     * @param logLevel       level (Error/Warning/Info/Debug or custom string), defaults to "Error".
+     * @param classification (optional) Optional descriptor string. defaults to "issue"
+     * @param t              Exception to create the AppEvent from
      * @return Newly created AppEvent
      */
-    public AppEvent createAppEventFromException(String classification, Throwable t) {
-        AppEvent event = createAppEvent(classification, t.getClass().getName(), t.getMessage());
-        event.setEventStacktrace(EventTraceBuilder.getEventTraces(t));;
+    public AppEvent createAppEventFromException(String logLevel, String classification, Throwable t) {
+        AppEvent event = createAppEvent(logLevel, classification, t.getClass().getName(), t.getMessage());
+        event.setEventStacktrace(EventTraceBuilder.getEventTraces(t));
         return event;
     }
 
     /**
      * Send exception to Trakerr by creating a new AppEvent and populating the stack trace.
      *
-     * @param classification Classification like Error/Warn/Info/Debug
-     * @param t exception
+     * @param logLevel       Classification like Error/Warn/Info/Debug
+     * @param classification (optional) Optional descriptor string. defaults to "issue"
+     * @param t              exception
      * @throws RuntimeException when an error occurs sending the exception
      */
-    public void sendException(String classification, Throwable t) {
+    public void sendException(String logLevel, String classification, Throwable t) {
         try {
-            sendEvent(createAppEventFromException(classification, t));
+            sendEvent(createAppEventFromException(logLevel, classification, t));
         } catch (ApiException apiException) {
             throw new RuntimeException(apiException.getMessage(), apiException);
         }
@@ -131,14 +161,14 @@ public class TrakerrClient {
     /**
      * Send exception to Trakerr asynchronously by creating a new AppEvent and populating the stack trace.
      *
-     * @param classification Classification like Error/Warn/Info/Debug
-     * @param e exception
-     * @param callback callback result to the async call
-     * @throws RuntimeException when an error occurs sending the exception
+     * @param logLevel       level of the error like Error/Warn/Info/Debug
+     * @param classification (optional) Optional descriptor string. defaults to "issue"
+     * @param e              exception
+     * @param callback       callback result to the async call   @throws RuntimeException when an error occurs sending the exception
      */
-    public void sendExceptionAsync(String classification, Throwable e, ApiCallback<Void> callback) {
-        AppEvent event = createAppEvent(classification, e.getClass().getName(), e.getMessage());
-        event.setEventStacktrace(EventTraceBuilder.getEventTraces(e));;
+    public void sendExceptionAsync(String logLevel, String classification, Throwable e, ApiCallback<Void> callback) {
+        AppEvent event = createAppEvent(logLevel, classification, e.getClass().getName(), e.getMessage());
+        event.setEventStacktrace(EventTraceBuilder.getEventTraces(e));
         try {
             sendEventAsync(event, callback);
         } catch (ApiException apiException) {
@@ -174,15 +204,18 @@ public class TrakerrClient {
 
     /**
      * Takes an AppEvent and fills any empty field with the current client defaults.
+     *
      * @param appEvent The AppEvent to fill.
      * @return The AppEvent object after all of it's properties have been filled.
      */
     private AppEvent FillDefaults(AppEvent appEvent) {
         if (appEvent.getApiKey() == null) appEvent.setApiKey(this.getApiKey());
-        ;
+
 
         if (appEvent.getContextAppVersion() == null) appEvent.setContextAppVersion(this.getContextAppVersion());
+        if (appEvent.getDeploymentStage() == null) appEvent.setDeploymentStage(this.getContextDevelopmentStage());
 
+        if (appEvent.getContextEnvLanguage() == null) appEvent.setContextEnvLanguage(this.getContextEnvLanguage());
         if (appEvent.getContextEnvName() == null) appEvent.setContextEnvName(this.getContextEnvName());
         if (appEvent.getContextEnvVersion() == null) appEvent.setContextEnvVersion(this.getContextEnvVersion());
         if (appEvent.getContextEnvHostname() == null) appEvent.setContextEnvHostname(this.getContextEnvHostname());
@@ -193,153 +226,169 @@ public class TrakerrClient {
         }
 
         if (appEvent.getContextDataCenter() == null) appEvent.setContextDataCenter(getContextDataCenter());
-        if (appEvent.getContextDataCenterRegion() == null) appEvent.setContextDataCenterRegion(getContextDataCenterRegion());
+        if (appEvent.getContextDataCenterRegion() == null)
+            appEvent.setContextDataCenterRegion(getContextDataCenterRegion());
 
         if (appEvent.getEventTime() == null) appEvent.setEventTime(System.currentTimeMillis());
 
         return appEvent;
     }
-    
+
     //Getters and setters for properties follow.
-    
-	/**
-	 * @return the apiKey
-	 */
-	public String getApiKey() {
-		return apiKey;
-	}
 
-	/**
-	 * @param apiKey the apiKey to set
-	 */
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
-	}
+    /**
+     * @return the apiKey
+     */
+    public String getApiKey() {
+        return apiKey;
+    }
 
-	/**
-	 * @return the contextAppVersion
-	 */
-	public String getContextAppVersion() {
-		return contextAppVersion;
-	}
+    /**
+     * @param apiKey the apiKey to set
+     */
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
 
-	/**
-	 * @param contextAppVersion the contextAppVersion to set
-	 */
-	public void setContextAppVersion(String contextAppVersion) {
-		this.contextAppVersion = contextAppVersion;
-	}
+    /**
+     * @return the contextAppVersion
+     */
+    public String getContextAppVersion() {
+        return contextAppVersion;
+    }
 
-	/**
-	 * @return the contextEnvName
-	 */
-	public String getContextEnvName() {
-		return contextEnvName;
-	}
+    /**
+     * @param contextAppVersion the contextAppVersion to set
+     */
+    public void setContextAppVersion(String contextAppVersion) {
+        this.contextAppVersion = contextAppVersion;
+    }
 
-	/**
-	 * @param contextEnvName the contextEnvName to set
-	 */
-	public void setContextEnvName(String contextEnvName) {
-		this.contextEnvName = contextEnvName;
-	}
+    /**
+     * @return the contextEnvName
+     */
+    public String getContextEnvName() {
+        return contextEnvName;
+    }
 
-	/**
-	 * @return the contextEnvVersion
-	 */
-	public String getContextEnvVersion() {
-		return contextEnvVersion;
-	}
+    /**
+     * @param contextEnvName the contextEnvName to set
+     */
+    public void setContextEnvName(String contextEnvName) {
+        this.contextEnvName = contextEnvName;
+    }
 
-	/**
-	 * @param contextEnvVersion the contextEnvVersion to set
-	 */
-	public void setContextEnvVersion(String contextEnvVersion) {
-		this.contextEnvVersion = contextEnvVersion;
-	}
+    /**
+     * @return the contextEnvVersion
+     */
+    public String getContextEnvVersion() {
+        return contextEnvVersion;
+    }
 
-	/**
-	 * @return the contextEnvHostname
-	 */
-	public String getContextEnvHostname() {
-		return contextEnvHostname;
-	}
+    /**
+     * @param contextEnvVersion the contextEnvVersion to set
+     */
+    public void setContextEnvVersion(String contextEnvVersion) {
+        this.contextEnvVersion = contextEnvVersion;
+    }
 
-	/**
-	 * @param contextEnvHostname the contextEnvHostname to set
-	 */
-	public void setContextEnvHostname(String contextEnvHostname) {
-		this.contextEnvHostname = contextEnvHostname;
-	}
+    /**
+     * @return the contextEnvHostname
+     */
+    public String getContextEnvHostname() {
+        return contextEnvHostname;
+    }
 
-	/**
-	 * @return the contextAppOS
-	 */
-	public String getContextAppOS() {
-		return contextAppOS;
-	}
+    /**
+     * @param contextEnvHostname the contextEnvHostname to set
+     */
+    public void setContextEnvHostname(String contextEnvHostname) {
+        this.contextEnvHostname = contextEnvHostname;
+    }
 
-	/**
-	 * @param contextAppOS the contextAppOS to set
-	 */
-	public void setContextAppOS(String contextAppOS) {
-		this.contextAppOS = contextAppOS;
-	}
+    /**
+     * @return the contextAppOS
+     */
+    public String getContextAppOS() {
+        return contextAppOS;
+    }
 
-	/**
-	 * @return the contextAppOSVersion
-	 */
-	public String getContextAppOSVersion() {
-		return contextAppOSVersion;
-	}
+    /**
+     * @param contextAppOS the contextAppOS to set
+     */
+    public void setContextAppOS(String contextAppOS) {
+        this.contextAppOS = contextAppOS;
+    }
 
-	/**
-	 * @param contextAppOSVersion the contextAppOSVersion to set
-	 */
-	public void setContextAppOSVersion(String contextAppOSVersion) {
-		this.contextAppOSVersion = contextAppOSVersion;
-	}
+    /**
+     * @return the contextAppOSVersion
+     */
+    public String getContextAppOSVersion() {
+        return contextAppOSVersion;
+    }
 
-	/**
-	 * @return the contextDataCenter
-	 */
-	public String getContextDataCenter() {
-		return contextDataCenter;
-	}
+    /**
+     * @param contextAppOSVersion the contextAppOSVersion to set
+     */
+    public void setContextAppOSVersion(String contextAppOSVersion) {
+        this.contextAppOSVersion = contextAppOSVersion;
+    }
 
-	/**
-	 * @param contextDataCenter the contextDataCenter to set
-	 */
-	public void setContextDataCenter(String contextDataCenter) {
-		this.contextDataCenter = contextDataCenter;
-	}
+    /**
+     * @return the contextDataCenter
+     */
+    public String getContextDataCenter() {
+        return contextDataCenter;
+    }
 
-	/**
-	 * @return the contextDataCenterRegion
-	 */
-	public String getContextDataCenterRegion() {
-		return contextDataCenterRegion;
-	}
+    /**
+     * @param contextDataCenter the contextDataCenter to set
+     */
+    public void setContextDataCenter(String contextDataCenter) {
+        this.contextDataCenter = contextDataCenter;
+    }
 
-	/**
-	 * @param contextDataCenterRegion the contextDataCenterRegion to set
-	 */
-	public void setContextDataCenterRegion(String contextDataCenterRegion) {
-		this.contextDataCenterRegion = contextDataCenterRegion;
-	}
+    /**
+     * @return the contextDataCenterRegion
+     */
+    public String getContextDataCenterRegion() {
+        return contextDataCenterRegion;
+    }
 
-	/**
-	 * @return the eventsApi
-	 */
-	public EventsApi getEventsApi() {
-		return eventsApi;
-	}
+    /**
+     * @param contextDataCenterRegion the contextDataCenterRegion to set
+     */
+    public void setContextDataCenterRegion(String contextDataCenterRegion) {
+        this.contextDataCenterRegion = contextDataCenterRegion;
+    }
 
-	/**
-	 * @param eventsApi the eventsApi to set
-	 */
-	public void setEventsApi(EventsApi eventsApi) {
-		this.eventsApi = eventsApi;
-	}
+    /**
+     * @return the eventsApi
+     */
+    public EventsApi getEventsApi() {
+        return eventsApi;
+    }
 
+    /**
+     * @param eventsApi the eventsApi to set
+     */
+    public void setEventsApi(EventsApi eventsApi) {
+        this.eventsApi = eventsApi;
+    }
+
+    public String getContextDevelopmentStage() {
+        return contextDevelopmentStage;
+    }
+
+    public void setContextDevelopmentStage(String contextDevelopmentStage) {
+        this.contextDevelopmentStage = contextDevelopmentStage;
+    }
+
+    public String getContextEnvLanguage() {
+        return contextEnvLanguage;
+    }
+
+    public void setContextEnvLanguage(String contextEnvLanguage) {
+        this.contextEnvLanguage = contextEnvLanguage;
+    }
 }

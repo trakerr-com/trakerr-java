@@ -33,9 +33,32 @@ public class TrakerrAppender extends AppenderSkeleton {
     protected void append(LoggingEvent loggingEvent) {
         if (!this.enabled) return;
 
-        // get logLevel in propercase (first letter capitalized)
+        //Get logLevel in Trakerr enum style.
         String logLevel = loggingEvent.getLevel().toString().toLowerCase();
-        logLevel = logLevel.substring(0, 1).toUpperCase() + logLevel.substring(1);
+        AppEvent.LogLevelEnum level;
+
+        switch(logLevel)
+        {
+            case "debug":
+                level = AppEvent.LogLevelEnum.DEBUG;
+                break;
+
+            case "info":
+                level = AppEvent.LogLevelEnum.INFO;
+                break;
+
+            case "warn":
+            case "warning":
+                level = AppEvent.LogLevelEnum.WARNING;
+                break;
+
+            case "fatal":
+                level = AppEvent.LogLevelEnum.FATAL;
+                break;
+
+            default:
+                level = AppEvent.LogLevelEnum.ERROR;
+        }
 
         // get event type
         ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
@@ -43,7 +66,7 @@ public class TrakerrAppender extends AppenderSkeleton {
         String eventType = throwable == null ? loggingEvent.getLoggerName() : throwable.getClass().getName();
 
         // create app event
-        AppEvent event = this.trakerrClient.createAppEvent(logLevel, null, eventType, loggingEvent.getRenderedMessage());
+        AppEvent event = this.trakerrClient.createAppEvent(level, null, eventType, loggingEvent.getRenderedMessage());
 
         // build the stack trace
         event.setEventStacktrace(EventTraceBuilder.getEventTraces(throwable));

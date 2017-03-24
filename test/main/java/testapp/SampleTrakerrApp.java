@@ -16,11 +16,16 @@ public class SampleTrakerrApp {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
+        String api_key = "<your api key>";
+
+        if (args.length > 0 && api_key == "<your api key>")
+            api_key = args[0];
+
         // Option-1: Use log4j
         logger.error("This is a test log4j exception.", new Exception("Test log4j exception."));
 
         // create a client
-        TrakerrClient client = new TrakerrClient("<your api key>", "1.0", "development");
+        TrakerrClient client = new TrakerrClient(api_key, "1.0", "development");
 
         
         // Option-2: Throw exception.

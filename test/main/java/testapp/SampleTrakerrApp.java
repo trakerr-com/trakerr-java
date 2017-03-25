@@ -36,8 +36,34 @@ public class SampleTrakerrApp {
             System.out.println("Test exception sent.");
         }
 
-        // Option-3: Send an event (including non-exceptions) manually.
+
+        // Option-3: Send an error with custom data
+        try {
+            throw new Exception("This is a test exception.");
+        } catch(Exception e) {
+            AppEvent errevnt = client.createAppEvent(AppEvent.LogLevelEnum.FATAL, null, e);
+            errevnt.eventUser("jill@trakerr.io");
+            errevnt.eventSession("20");
+
+            try {
+                ApiResponse<Void> response = client.sendEvent(errevnt);
+
+                System.out.println("Sent event: " + response.getStatusCode() + ", data: " + response.toString());
+            } catch (ApiException senderr) {
+                senderr.printStackTrace();
+            }
+            System.out.println("Test custom exception sent.");
+        }
+
+        // Option-4: Send an event (including non-exceptions) manually.
         AppEvent event = client.createAppEvent(AppEvent.LogLevelEnum.INFO, "User got to this state.","System.Exception", "Some message");
+        event.eventUser("john@trakerr.io");
+        event.eventSession("17");
+
+        CustomStringData msg = new CustomStringData();
+        msg.customData1("I'm a custom string!");
+
+        event.customProperties(new CustomData().stringData(msg));
         try {
             ApiResponse<Void> response = client.sendEvent(event);
 
@@ -45,5 +71,7 @@ public class SampleTrakerrApp {
         } catch (ApiException e) {
             e.printStackTrace();
         }
+
+        System.exit(0);
     }
 }

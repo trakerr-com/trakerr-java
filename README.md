@@ -34,9 +34,9 @@ log4j.appender.trakerr=io.trakerr.client.TrakerrAppender
 #log4j.appender.trakerr.url=https://trakerr.io/api/v1
 log4j.appender.trakerr.apiKey=<your Trakerr API key>
 log4j.appender.trakerr.appVersion=1.0
-log4j.appender.trakerr.env=development
-#log4j.appender.trakerr.env=production
-#log4j.appender.trakerr.env=test
+log4j.appender.trakerr.stage=development
+#log4j.appender.trakerr.stage=production
+#log4j.appender.trakerr.stage=test
 log4j.appender.trakerr.enabled=true
 log4j.appender.trakerr.useAsync=true
 ```

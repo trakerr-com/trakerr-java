@@ -14,7 +14,7 @@ public class TrakerrAppender extends AppenderSkeleton {
 
     private boolean enabled;
     private String apiKey;
-    private String env;
+    private String stage;
     private String appVersion;
     private String dataCenter;
     private String dataCenterRegion;
@@ -24,7 +24,7 @@ public class TrakerrAppender extends AppenderSkeleton {
     @Override
     public void activateOptions() {
         if (!this.enabled) return;
-        this.trakerrClient = new TrakerrClient(this.apiKey, this.appVersion, this.env);
+        this.trakerrClient = new TrakerrClient(this.apiKey, this.appVersion, this.stage);
         if(this.dataCenter != null) trakerrClient.setContextDataCenter(this.dataCenter);
         if(this.dataCenterRegion != null)trakerrClient.setContextDataCenterRegion(this.dataCenterRegion);
     }
@@ -121,8 +121,8 @@ public class TrakerrAppender extends AppenderSkeleton {
         this.apiKey = apiKey;
     }
     
-    public void setEnv(String env) {
-        this.env = env;
+    public void setStage(String stage) {
+        this.stage = stage;
     }
 
     public void setAppVersion(String appVersion) {

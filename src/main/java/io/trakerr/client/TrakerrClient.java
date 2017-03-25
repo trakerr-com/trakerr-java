@@ -32,7 +32,7 @@ public class TrakerrClient {
      * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
      */
     public TrakerrClient(String apiKey, String contextAppVersion, String contextDevelopmentStage) {
-        this(apiKey, null, contextAppVersion, contextDevelopmentStage, null, null, null, null, null, null, null);
+        this(apiKey, null, contextAppVersion, contextDevelopmentStage, null, null, null, null, null, null);
     }
 
     /**
@@ -42,7 +42,6 @@ public class TrakerrClient {
      * @param url                     (optional) URL to the Trakerr host, pass null to use default.
      * @param contextAppVersion       (optional) application version, defaults to 1.0.
      * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
-     * @param contextEnvName          (optional) runtime interpreter name.
      * @param contextEnvVersion       (optional) environment version.
      * @param contextEnvHostname      (optional) hostname of the environment.
      * @param contextAppOS            (optional) operating system.
@@ -50,7 +49,7 @@ public class TrakerrClient {
      * @param contextDataCenter       (optional) data center.
      * @param contextDataCenterRegion (optional) data center region.
      */
-    private TrakerrClient(String apiKey, String url, String contextAppVersion, String contextDevelopmentStage, String contextEnvName, String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion, String contextDataCenter, String contextDataCenterRegion) {
+    private TrakerrClient(String apiKey, String url, String contextAppVersion, String contextDevelopmentStage, String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion, String contextDataCenter, String contextDataCenterRegion) {
         this.setApiKey(apiKey);
         this.setContextAppVersion(contextAppVersion == null ? "1.0" : contextAppVersion);
         this.setContextDevelopmentStage(contextDevelopmentStage == null ? "development" : contextDevelopmentStage);
@@ -89,38 +88,15 @@ public class TrakerrClient {
      * @param eventMessage   Message, defaults to "unknown"
      * @return Newly created AppEvent
      */
-    public AppEvent createAppEvent(String logLevel, String classification, String eventType, String eventMessage) {
-        if (logLevel == null) logLevel = "Error";
+    public AppEvent createAppEvent(AppEvent.LogLevelEnum logLevel, String classification, String eventType, String eventMessage) {
+        if (logLevel == null) logLevel = AppEvent.LogLevelEnum.ERROR;
         if (classification == null) classification = "issue";
         if (eventType == null) eventType = "unknown";
         if (eventMessage == null) eventMessage = "unknown";
 
         AppEvent event = new AppEvent();
 
-        AppEvent.LogLevelEnum level;
-        switch (logLevel.toLowerCase()) {
-            case "debug":
-                level = AppEvent.LogLevelEnum.DEBUG;
-                break;
-
-            case "warning":
-            case "warn":
-                level = AppEvent.LogLevelEnum.WARNING;
-                break;
-
-            case "fatal":
-                level = AppEvent.LogLevelEnum.FATAL;
-                break;
-
-            case "info":
-                level = AppEvent.LogLevelEnum.INFO;
-                break;
-
-            default:
-                level = AppEvent.LogLevelEnum.ERROR;
-                break;
-        }
-        event.setLogLevel(level);
+        event.setLogLevel(logLevel);
         event.setClassification(classification);
         event.setEventType(eventType);
         event.setEventMessage(eventMessage);
@@ -132,11 +108,11 @@ public class TrakerrClient {
      * Use this to bootstrap a new AppEvent object with the supplied logLevel and the exception
      *
      * @param logLevel       level (Error/Warning/Info/Debug or custom string), defaults to "Error".
-     * @param classification (optional) Optional descriptor string. defaults to "issue"
-     * @param t              Exception to create the AppEvent from
+     * @param classification Optional descriptor string. defaults to "issue".
+     * @param t              Exception to create the AppEvent from.
      * @return Newly created AppEvent
      */
-    public AppEvent createAppEventFromException(String logLevel, String classification, Throwable t) {
+    public AppEvent createAppEvent(AppEvent.LogLevelEnum logLevel, String classification, Throwable t) {
         AppEvent event = createAppEvent(logLevel, classification, t.getClass().getName(), t.getMessage());
         event.setEventStacktrace(EventTraceBuilder.getEventTraces(t));
         return event;
@@ -150,9 +126,9 @@ public class TrakerrClient {
      * @param t              exception
      * @throws RuntimeException when an error occurs sending the exception
      */
-    public void sendException(String logLevel, String classification, Throwable t) {
+    public void sendException(AppEvent.LogLevelEnum logLevel, String classification, Throwable t) {
         try {
-            sendEvent(createAppEventFromException(logLevel, classification, t));
+            sendEvent(createAppEvent(logLevel, classification, t));
         } catch (ApiException apiException) {
             throw new RuntimeException(apiException.getMessage(), apiException);
         }
@@ -164,9 +140,10 @@ public class TrakerrClient {
      * @param logLevel       level of the error like Error/Warn/Info/Debug
      * @param classification (optional) Optional descriptor string. defaults to "issue"
      * @param e              exception
-     * @param callback       callback result to the async call   @throws RuntimeException when an error occurs sending the exception
+     * @param callback       callback result to the async call
+     * @throws RuntimeException when an error occurs sending the exception
      */
-    public void sendExceptionAsync(String logLevel, String classification, Throwable e, ApiCallback<Void> callback) {
+    public void sendExceptionAsync(AppEvent.LogLevelEnum logLevel, String classification, Throwable e, ApiCallback<Void> callback) {
         AppEvent event = createAppEvent(logLevel, classification, e.getClass().getName(), e.getMessage());
         event.setEventStacktrace(EventTraceBuilder.getEventTraces(e));
         try {

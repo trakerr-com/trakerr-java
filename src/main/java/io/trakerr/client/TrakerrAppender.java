@@ -14,7 +14,7 @@ public class TrakerrAppender extends AppenderSkeleton {
 
     private boolean enabled;
     private String apiKey;
-    private String env;
+    private String stage;
     private String appVersion;
     private String dataCenter;
     private String dataCenterRegion;
@@ -24,7 +24,7 @@ public class TrakerrAppender extends AppenderSkeleton {
     @Override
     public void activateOptions() {
         if (!this.enabled) return;
-        this.trakerrClient = new TrakerrClient(this.apiKey, this.appVersion, this.env);
+        this.trakerrClient = new TrakerrClient(this.apiKey, this.appVersion, this.stage);
         if(this.dataCenter != null) trakerrClient.setContextDataCenter(this.dataCenter);
         if(this.dataCenterRegion != null)trakerrClient.setContextDataCenterRegion(this.dataCenterRegion);
     }
@@ -33,9 +33,32 @@ public class TrakerrAppender extends AppenderSkeleton {
     protected void append(LoggingEvent loggingEvent) {
         if (!this.enabled) return;
 
-        // get logLevel in propercase (first letter capitalized)
+        //Get logLevel in Trakerr enum style.
         String logLevel = loggingEvent.getLevel().toString().toLowerCase();
-        logLevel = logLevel.substring(0, 1).toUpperCase() + logLevel.substring(1);
+        AppEvent.LogLevelEnum level;
+
+        switch(logLevel)
+        {
+            case "debug":
+                level = AppEvent.LogLevelEnum.DEBUG;
+                break;
+
+            case "info":
+                level = AppEvent.LogLevelEnum.INFO;
+                break;
+
+            case "warn":
+            case "warning":
+                level = AppEvent.LogLevelEnum.WARNING;
+                break;
+
+            case "fatal":
+                level = AppEvent.LogLevelEnum.FATAL;
+                break;
+
+            default:
+                level = AppEvent.LogLevelEnum.ERROR;
+        }
 
         // get event type
         ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
@@ -43,7 +66,7 @@ public class TrakerrAppender extends AppenderSkeleton {
         String eventType = throwable == null ? loggingEvent.getLoggerName() : throwable.getClass().getName();
 
         // create app event
-        AppEvent event = this.trakerrClient.createAppEvent(logLevel, null, eventType, loggingEvent.getRenderedMessage());
+        AppEvent event = this.trakerrClient.createAppEvent(level, null, eventType, loggingEvent.getRenderedMessage());
 
         // build the stack trace
         event.setEventStacktrace(EventTraceBuilder.getEventTraces(throwable));
@@ -98,8 +121,8 @@ public class TrakerrAppender extends AppenderSkeleton {
         this.apiKey = apiKey;
     }
     
-    public void setEnv(String env) {
-        this.env = env;
+    public void setStage(String stage) {
+        this.stage = stage;
     }
 
     public void setAppVersion(String appVersion) {

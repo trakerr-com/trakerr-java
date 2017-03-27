@@ -106,8 +106,8 @@ The TrakerrClient class however has a lot of exposed properties. The benefit to 
 
 Name | Type | Description | Notes
 ------------ | ------------- | -------------  | -------------
-**apiKey** | **string**  | API Key for your application. | Defaults to reading "trakerr.apiKey" property under log4j.properties for log4j errors.
-**contextAppVersion** | **string** | Provide the application version. | Defaults to reading "trakerr.contextAppVersion" property under log4j.properties log4j errors.
+**apiKey** | **string**  | API Key for your application. | Defaults to reading "trakerr.apiKey" property under log4j.properties for log4j errors only.
+**contextAppVersion** | **string** | Provide the application version. | Defaults to reading "trakerr.contextAppVersion" property under log4j.properties for log4j errors only.
 **contextDevelopmentStage** | **string** | One of development, staging, production; or a custom string. | Default Value: trakerr.stage under log4j.properties log4j errors or "development" if not provided.
 **contextEnvLanguage** | **string** | Constant string representing the language the application is in. | Default value: "java".
 **contextEnvName** | **string** | Name of the CLR the program is running on | Defaults to System.getProperty("java.vendor").

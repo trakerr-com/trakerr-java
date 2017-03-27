@@ -97,21 +97,12 @@ Sending an exception programmatically requires a TrakerrClient to send the error
 ```
 
 ## About TrakerrClient's constructor
-`TrakerClient` has an overloaded constructor. The first only asks for the necessary items to send an event:
+The `TrakerrClient` class above can be constructed to take aditional data, rather than using the configured defaults. The constructor signature is:
 
 ```java
-public TrakerrClient(String apiKey, String contextAppVersion, String contextEnvName, String contextEnvVersion)
+public TrakerrClient(String apiKey, String contextAppVersion, String contextDeployementStage)
 ```
-Every argument other than API key has a default value if you pass `null`. The second call will expose all the variables:
-
-```java
-public TrakerrClient(String apiKey, String url, String contextAppVersion,
-String contextEnvName, String contextEnvVersion, String contextEnvHostname,
-String contextAppOS, String contextAppOSVersion, String contextDataCenter,
-String contextDataCenterRegion)
-```
-
-Once again, every arguments has a default value if passed `null`. Below is a table with all of the arguments:
+The TrakerrClient class however has a lot of exposed properties. The benefit to setting these immediately after after you create the TrakerrClient is that AppEvent will default it's values against the TrakerClient that created it. This way if there is a value that all your AppEvents uses, and the constructor default value currently doesn't suit you; it may be easier to change it in TrakerrClient as it will become the default value for all AppEvents created after. A lot of these are populated by default value by the constructor, but you can populate them with whatever string data you want. The following table provides an in depth look at each of those.
 
 Name | Type | Description | Notes
 ------------ | ------------- | -------------  | -------------

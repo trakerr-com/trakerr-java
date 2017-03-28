@@ -1,4 +1,4 @@
-# trakerr-java-client
+# Trakerr-java API client
 
 ## Installation
 

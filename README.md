@@ -96,7 +96,7 @@ Sending an exception programmatically requires a TrakerrClient to send the error
         }
 ```
 
-## About TrakerrClient's constructor
+## About TrakerrClient's properties.
 The `TrakerrClient` class above can be constructed to take aditional data, rather than using the configured defaults. The constructor signature is:
 
 ```java

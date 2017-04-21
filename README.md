@@ -1,4 +1,4 @@
-# trakerr-java-client
+# Trakerr-java API client
 
 ## Installation
 
@@ -29,7 +29,6 @@ Add a log4j appender as shown below to your log4j.properties
 
 ```
 log4j.rootLogger=WARN, trakerr
-
 log4j.appender.trakerr=io.trakerr.client.TrakerrAppender
 #log4j.appender.trakerr.url=https://trakerr.io/api/v1
 log4j.appender.trakerr.apiKey=<your Trakerr API key>
@@ -48,7 +47,7 @@ Once installed any logging that is WARN or above gets logged. You are free to mo
 Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this.
 
 ```java
-        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development", "1.0");
+        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");
 
         try {
             throw new Exception("This is a test exception.");
@@ -63,7 +62,7 @@ Sending an exception programmatically requires a TrakerrClient to send the error
 Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this.
 
 ```java
-        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development", "1.0");
+        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");
 
         try {
             throw new Exception("This is a test exception.");
@@ -85,7 +84,7 @@ Sending an exception programmatically requires a TrakerrClient to send the error
 ### Option-4: Send a non-exception (any event) programmatically
 
 ```java
-        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development", "1.0");
+        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");
 
         AppEvent event = client.createAppEvent("Error", "foo", "bar");
         try {
@@ -97,36 +96,29 @@ Sending an exception programmatically requires a TrakerrClient to send the error
         }
 ```
 
-## About TrakerrClient's constructor
-`TrakerClient` has an overloaded constructor. The first only asks for the necessary items to send an event:
+## About TrakerrClient's properties.
+The `TrakerrClient` class above can be constructed to take aditional data, rather than using the configured defaults. The constructor signature is:
 
 ```java
-public TrakerrClient(String apiKey, String contextAppVersion, String contextEnvName, String contextEnvVersion)
+public TrakerrClient(String apiKey, String contextAppVersion, String contextDeployementStage)
 ```
-Every argument other than API key has a default value if you pass `null`. The second call will expose all the variables:
-
-```java
-public TrakerrClient(String apiKey, String url, String contextAppVersion,
-String contextEnvName, String contextEnvVersion, String contextEnvHostname,
-String contextAppOS, String contextAppOSVersion, String contextDataCenter,
-String contextDataCenterRegion)
-```
-
-Once again, every arguments has a default value if passed `null`. Below is a table with all of the arguments:
+The TrakerrClient class however has a lot of exposed properties. The benefit to setting these immediately after after you create the TrakerrClient is that AppEvent will default it's values against the TrakerClient that created it. This way if there is a value that all your AppEvents uses, and the constructor default value currently doesn't suit you; it may be easier to change it in TrakerrClient as it will become the default value for all AppEvents created after. A lot of these are populated by default value by the constructor, but you can populate them with whatever string data you want. The following table provides an in depth look at each of those.
 
 Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**apiKey** | **str** | Specify the API key for this application | [Required argument]
-**url** | **str** | (optional) URL to the Trakerr host. | [optional if passed `null`] 
-**contextAppVersion** | **str** | (optional) Application version. | [optional if passed `null`] Defaults to 1.0.
-**contextEnvName** | **str** | (optional) Environment name like "development", "staging", "production". | [optional if passed `null`] Default Value: "develoment".
-**contextEnvVersion** | **str** | (optional) Environment version | [optional if passed `null`]
-**contextEnvHostname** | **str** | (optional) Hostname of the environment | [optional if passed `null`] 
-**contextAppOS** | **str** | (optional) Operating system. | [optional if passed `null`]
-**contextAppOSVersion** | **str** | (optional)  operating system version. | [optional if passed `null`]
-**contextDataCenter** | **str** | (optional) Data center the application is running on or connected to. | [optional if passed `null`] 
-**contextDataCenterRegion** | **str** | (optional) Data center region. | [optional if passed `null`]
-
+------------ | ------------- | -------------  | -------------
+**apiKey** | **string**  | API Key for your application. | Defaults to reading "trakerr.apiKey" property under log4j.properties for log4j errors only.
+**contextAppVersion** | **string** | Provide the application version. | Defaults to reading "trakerr.contextAppVersion" property under log4j.properties for log4j errors only.
+**contextDevelopmentStage** | **string** | One of development, staging, production; or a custom string. | Default Value: trakerr.stage under log4j.properties log4j errors or "development" if not provided.
+**contextEnvLanguage** | **string** | Constant string representing the language the application is in. | Default value: "java".
+**contextEnvName** | **string** | Name of the CLR the program is running on | Defaults to System.getProperty("java.vendor").
+**contextEnvVersion** | **string** | Provide an environment version. | Defaults to System.getProperty("java.version").
+**contextEnvHostname** | **string** | Provide the current hostname. | Defaults to InetAddress.getLocalHost().getHostName().
+**contextAppOS** | **string** | Provide an operating system name. | Defaults to  System.getProperty("os.name").
+**contextAppOSVersion** | **string** | Provide an operating system version. | Defaults to System.getProperty("os.version").
+**contextAppOSBrowser** | **string** | An optional string browser name the application is running on. | Defaults to `null`
+**contextAppOSBrowserVersion** | **string** | An optional string browser version the application is running on. | Defaults to `null`
+**contextDataCenter** | **string** | Data center the application is running on or connected to. | Defaults to `null`
+**contextDataCenterRegion** | **string** | Data center region. | Defaults to `null`
 
 
 ## Documentation for Models

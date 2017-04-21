@@ -20,6 +20,8 @@ public class TrakerrClient {
     private String contextEnvHostname;
     private String contextAppOS;
     private String contextAppOSVersion;
+    private String contextAppBrowser;
+    private String ContextAppBrowserVersion;
     private String contextDataCenter;
     private String contextDataCenterRegion;
     private EventsApi eventsApi;
@@ -59,7 +61,6 @@ public class TrakerrClient {
             this.setContextEnvName(System.getProperty("java.vendor"));
             this.setContextEnvVersion(System.getProperty("java.version"));
         } catch (Exception e) {
-            this.setContextEnvVersion(contextEnvVersion);
         }
 
         try {
@@ -201,6 +202,9 @@ public class TrakerrClient {
             appEvent.setContextAppOS(this.getContextAppOS());
             appEvent.setContextAppOSVersion(this.getContextAppOSVersion());
         }
+
+        if (appEvent.getContextAppBrowser() == null) appEvent.setContextAppBrowser(this.getContextAppBrowser());
+        if (appEvent.getContextAppBrowserVersion() == null) appEvent.setContextAppBrowserVersion(this.getContextAppBrowserVersion());
 
         if (appEvent.getContextDataCenter() == null) appEvent.setContextDataCenter(getContextDataCenter());
         if (appEvent.getContextDataCenterRegion() == null)
@@ -367,5 +371,21 @@ public class TrakerrClient {
 
     public void setContextEnvLanguage(String contextEnvLanguage) {
         this.contextEnvLanguage = contextEnvLanguage;
+    }
+
+    public String getContextAppBrowser() {
+        return contextAppBrowser;
+    }
+
+    public void setContextAppBrowser(String contextAppBrowser) {
+        this.contextAppBrowser = contextAppBrowser;
+    }
+
+    public String getContextAppBrowserVersion() {
+        return ContextAppBrowserVersion;
+    }
+
+    public void setContextAppBrowserVersion(String contextAppBrowserVersion) {
+        ContextAppBrowserVersion = contextAppBrowserVersion;
     }
 }

@@ -1,29 +1,18 @@
 # Trakerr-java API client
 
-## Installation
+## 3 minute start using maven and log4j
+This is a combination of using maven and log4j. This guide assumes you have log4j set up. If this is your first time setting up log4j check out the log4j [docs](https://logging.apache.org/log4j/1.2/). Note our plugin is for log4j 1.2, although you may or may not be able to get it to work with log4j 2. A plugin for log4j 2 is planned for a future release.
 
-Install the Maven client dependency.
-
-### Maven users
-
-Add this dependency to your project's POM:
+Add us as a dependancy to your project's maven pom:
 
 ```xml
 <dependency>
     <groupId>io.trakerr</groupId>
     <artifactId>trakerr-java-client</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <scope>compile</scope>
 </dependency>
 ```
-
-## Getting Started
-
-First, make sure you have the [Maven](#installation) dependency installed as described above.
-
-There are a few options to send exceptions and other events to Trakerr.
-
-### Option-1: Use log4j
 
 Add a log4j appender as shown below to your log4j.properties
 
@@ -42,8 +31,13 @@ log4j.appender.trakerr.useAsync=true
 
 Once installed any logging that is WARN or above gets logged. You are free to modify the logging levels as per your requirements.
 
-### Option-2: Send an exception programmatically
+## Installation
+Install the Maven client dependency as above.
 
+## Getting Started
+There are a few options to send exceptions and other events to Trakerr manually. This offers you a greater degree of control than using log4j.
+
+### Option-1: Send an exception programmatically
 Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this.
 
 ```java
@@ -57,8 +51,7 @@ Sending an exception programmatically requires a TrakerrClient to send the error
         }
 ```
 
-### Option-3: Send an exception programmatically but with custom parameters
-
+### Option-2: Send an exception programmatically but with custom parameters
 Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this.
 
 ```java
@@ -81,7 +74,7 @@ Sending an exception programmatically requires a TrakerrClient to send the error
         }
 ```
 
-### Option-4: Send a non-exception (any event) programmatically
+### Option-3: Send a non-exception (any event) programmatically
 
 ```java
         TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");

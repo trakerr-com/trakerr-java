@@ -1,4 +1,4 @@
-# Trakerr-java API client
+# Trakerr - Java API client
 
 ## 3 Minute Install Guide using maven and log4j
 This is a combination of using maven and log4j. This guide assumes you have log4j set up. If this is your first time setting up log4j check out the log4j [docs](https://logging.apache.org/log4j/1.2/). Note our plugin is for log4j 1.2, although you may or may not be able to get it to work with log4j 2. A plugin for log4j 2 is planned for a future release.
@@ -31,11 +31,12 @@ log4j.appender.trakerr.useAsync=true
 
 Once installed any logging that is WARN or above gets logged. You are free to modify the logging levels as per your requirements.
 
-## Installation
-Install the Maven client dependency as above.
 
-## Getting Started
+## Detailed Integration Guide
 There are a few options to send exceptions and other events to Trakerr manually. This offers you a greater degree of control than using log4j.
+
+### Installation
+Install the Maven client dependency as above.
 
 ### Option-1: Send an exception programmatically
 Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this.

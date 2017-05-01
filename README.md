@@ -1,7 +1,7 @@
 # Trakerr - Java API client
 
 ## 3 Minute Install Guide using maven and log4j
-This is a combination of using maven and log4j. This guide assumes you have log4j set up. If this is your first time setting up log4j check out the log4j [docs](https://logging.apache.org/log4j/1.2/). Note our plugin is for log4j 1.2, although you may or may not be able to get it to work with log4j 2. A plugin for log4j 2 is planned for a future release.
+This is a combination of using maven and log4j. This guide assumes you have log4j set up. If this is your first time setting up log4j check out the log4j [docs](https://logging.apache.org/log4j/1.2/). Note: our plugin is for log4j 1.2, although you may or may not be able to get it to work with log4j 2. A plugin for log4j 2 is planned for a future release.
 
 Add us as a dependancy to your project's maven pom:
 
@@ -29,7 +29,7 @@ log4j.appender.trakerr.enabled=true
 log4j.appender.trakerr.useAsync=true
 ```
 
-Once installed any logging that is WARN or above gets logged. You are free to modify the logging levels as per your requirements.
+Once installed any logging that is WARN or above gets logged. You are free to modify the logging levels or or other attributes as per your requirements.
 
 
 ## Detailed Integration Guide
@@ -38,8 +38,17 @@ There are a few options to send exceptions and other events to Trakerr manually.
 ### Installation
 Install the Maven client dependency as above.
 
-### Option-1: Send an exception programmatically
-Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this.
+### Option-1: Use log4j
+Use the guide [above](#3-Minute-Install-Guide-using-maven-and-log4j) for configuring log4j.
+
+### Option-2: Send an exception programmatically
+Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this. Import:
+
+```java
+import io.trakerr.client.*;
+```
+
+Then you can simply catch an exception like so:
 
 ```java
         TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");
@@ -52,8 +61,19 @@ Sending an exception programmatically requires a TrakerrClient to send the error
         }
 ```
 
-### Option-2: Send an exception programmatically but with custom parameters
+### Option-3: Send an exception programmatically but with custom parameters
 Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this.
+
+ You'll need to import AppEvent to modify the app event, and all the properties inside of it. The other two imprts are for capturing the exception and response, if you wish:
+
+```java
+import io.trakerr.client.*;
+import io.trakerr.ApiException;
+import io.trakerr.ApiResponse;
+import io.trakerr.model.AppEvent;
+```
+If you would like to add custom parameters, you'll also need to import this.
+Afterwards, you can create your own app event:
 
 ```java
         TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");
@@ -75,12 +95,21 @@ Sending an exception programmatically requires a TrakerrClient to send the error
         }
 ```
 
-### Option-3: Send a non-exception (any event) programmatically
+### Option-4: Send a non-exception (any event) programmatically
+You can send non-errors or user events to Trakerr. If you do, we suggest that you provide an event name and message, along with populating the user and session fields at the very least. Use these imports:
+
+```java
+import io.trakerr.client.*;
+import io.trakerr.ApiException;
+import io.trakerr.ApiResponse;
+```
+
+And then simply send the error. You may omit imports and the exception handling if you don't wish it.
 
 ```java
         TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");
 
-        AppEvent event = client.createAppEvent("Error", "foo", "bar");
+        AppEvent event = client.createAppEvent("debug", "foo", "bar");
         try {
             ApiResponse<Void> response = client.sendEvent(event);
 

@@ -1,5 +1,9 @@
 # Trakerr - Java API client
 
+## Requirements
+Java 1.7+
+log4j 1.2 (if you want to use our log4j functionality)
+
 ## 3-minute Integration Guide using maven and log4j
 This is a combination of using maven and log4j. This guide assumes you have log4j set up. If this is your first time setting up log4j check out the log4j [docs](https://logging.apache.org/log4j/1.2/). Note: our plugin is for log4j 1.2, although you may or may not be able to get it to work with log4j 2. A plugin for log4j 2 is planned for a future release.
 

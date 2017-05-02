@@ -16,9 +16,9 @@ public class SampleTrakerrApp {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
-        String api_key = "<your api key>";
+        String api_key = "<api-key>";
 
-        if (args.length > 0 && api_key == "<your api key>")
+        if (args.length > 0 && api_key == "<api-key>")
             api_key = args[0];
 
         // Option-1: Use log4j

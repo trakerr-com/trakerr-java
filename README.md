@@ -24,7 +24,7 @@ Add a log4j appender as shown below to your log4j.properties
 log4j.rootLogger=WARN, trakerr
 log4j.appender.trakerr=io.trakerr.client.TrakerrAppender
 #log4j.appender.trakerr.url=https://trakerr.io/api/v1
-log4j.appender.trakerr.apiKey=<your Trakerr API key>
+log4j.appender.trakerr.apiKey=<api-key>
 log4j.appender.trakerr.appVersion=1.0
 log4j.appender.trakerr.stage=development
 #log4j.appender.trakerr.stage=production
@@ -55,7 +55,7 @@ import io.trakerr.client.*;
 Then you can simply catch an exception like so:
 
 ```java
-        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");
+        TrakerrClient client = new TrakerrClient("<api-key>", "1.0", "development");
 
         try {
             throw new Exception("This is a test exception.");
@@ -80,7 +80,7 @@ If you would like to add custom parameters, you'll also need to import this.
 Afterwards, you can create your own app event:
 
 ```java
-        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");
+        TrakerrClient client = new TrakerrClient("<api-key>", "1.0", "development");
 
         try {
             throw new Exception("This is a test exception.");
@@ -111,7 +111,7 @@ import io.trakerr.ApiResponse;
 And then simply send the error. You may omit imports and the exception handling if you don't wish it.
 
 ```java
-        TrakerrClient client = new TrakerrClient("<your trakerr api key>", "1.0", "development");
+        TrakerrClient client = new TrakerrClient("<api-key>", "1.0", "development");
 
         AppEvent event = client.createAppEvent("debug", "foo", "bar");
         try {

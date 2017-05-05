@@ -25,7 +25,7 @@
 
 package io.trakerr;
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-03-13T16:49:29.032-07:00")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-05-05T15:16:44.225-07:00")
 public class Configuration {
     private static ApiClient defaultApiClient = new ApiClient();
 

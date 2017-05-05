@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **apiKey** | **String** | API key generated for the application | 
 **logLevel** | [**LogLevelEnum**](#LogLevelEnum) | (optional) Logging level, one of &#39;debug&#39;,&#39;info&#39;,&#39;warning&#39;,&#39;error&#39;, &#39;fatal&#39;, defaults to &#39;error&#39; |  [optional]
-**classification** | **String** | (optional) one of &#39;error&#39; or a custom string for non-errors, defaults to &#39;error&#39; | 
+**classification** | **String** | (optional) one of &#39;issue&#39; or a custom string for non-issues, defaults to &#39;issue&#39; | 
 **eventType** | **String** | type of the event or error (eg. NullPointerException) | 
 **eventMessage** | **String** | message containing details of the event or error | 
 **eventTime** | **Long** | (optional) event time in ms since epoch |  [optional]
@@ -25,6 +25,14 @@ Name | Type | Description | Notes
 **contextAppOSVersion** | **String** | (optional) OS version the application is running on |  [optional]
 **contextDataCenter** | **String** | (optional) Data center the application is running on or connected to |  [optional]
 **contextDataCenterRegion** | **String** | (optional) Data center region |  [optional]
+**contextTags** | **List&lt;String&gt;** |  |  [optional]
+**contextURL** | **String** | (optional) The full URL when running in a browser when the event was generated. |  [optional]
+**contextOperationTimeMillis** | **Long** | (optional) duration that this event took to occur in millis. Example - database call time in millis. |  [optional]
+**contextCpuPercentage** | **Integer** | (optional) CPU utilization as a percent when event occured |  [optional]
+**contextMemoryPercentage** | **Integer** | (optional) Memory utilization as a percent when event occured |  [optional]
+**contextCrossAppCorrelationId** | **String** | (optional) Cross application correlation ID |  [optional]
+**contextDevice** | **String** | (optional) Device information |  [optional]
+**contextAppSku** | **String** | (optional) Application SKU |  [optional]
 **customProperties** | [**CustomData**](CustomData.md) |  |  [optional]
 **customSegments** | [**CustomData**](CustomData.md) |  |  [optional]
 

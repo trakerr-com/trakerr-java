@@ -110,7 +110,7 @@ public class TrakerrClient {
 
         } catch (Exception e) {
             //bean doesn't implement the low level sun interface,
-            //probably because it's not oracle/java and like openjdk or something.
+            //probably because it's not oracle/java and like openjdk or another implimentation.
         }
     }
 
@@ -270,12 +270,17 @@ public class TrakerrClient {
         if (appEvent.getContextCpuPercentage() == null) {
 
             if (sunmsbean != null) {
-                double cpu = sunmsbean.getSystemCpuLoad();
-                appEvent.setContextCpuPercentage(cpu >= 0 ? (int) Math.round(cpu * 100) : null);
+                try {
+                    double cpu = sunmsbean.getSystemCpuLoad();
+                    appEvent.setContextCpuPercentage(cpu >= 0 ? (int) Math.round(cpu * 100) : null);
 
 
-                int mempercent = (int)Math.round(( (double) (sunmsbean.getTotalPhysicalMemorySize() - sunmsbean.getFreeSwapSpaceSize()) / sunmsbean.getTotalPhysicalMemorySize()) * 100);
-                appEvent.setContextMemoryPercentage(mempercent);
+                    int mempercent = (int) Math.round(((double) (sunmsbean.getTotalPhysicalMemorySize() - sunmsbean.getFreeSwapSpaceSize()) / sunmsbean.getTotalPhysicalMemorySize()) * 100);
+                    appEvent.setContextMemoryPercentage(mempercent);
+                } catch (Exception e) {
+                    //Issue with using the initialized low level library.
+                }
+
             }
         }
 

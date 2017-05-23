@@ -4,8 +4,11 @@ import com.squareup.okhttp.Call;
 import io.trakerr.*;
 import io.trakerr.model.AppEvent;
 
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
+
 
 /**
  * Client to create and send events to Trakerr.
@@ -21,26 +24,44 @@ public class TrakerrClient {
     private String contextAppOS;
     private String contextAppOSVersion;
     private String contextAppBrowser;
-    private String ContextAppBrowserVersion;
+    private String contextAppBrowserVersion;
     private String contextDataCenter;
     private String contextDataCenterRegion;
+    private String contextAppSKU;
+    private List<String> contextTags;
     private EventsApi eventsApi;
+
+    private com.sun.management.OperatingSystemMXBean sunmsbean;
 
     /**
      * Initialize a new instance of TrakerrClient with specified options. If null is passed to any of the optional parameters, the defaults are used.
      *
-     * @param apiKey                  (required) Specify the API key for this application.
+     * @param apiKey                  (required) specify the API key for this application.
      * @param contextAppVersion       (optional) application version, defaults to 1.0.
      * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
      */
     public TrakerrClient(String apiKey, String contextAppVersion, String contextDevelopmentStage) {
-        this(apiKey, null, contextAppVersion, contextDevelopmentStage, null, null, null, null, null, null);
+        this(apiKey, null, contextAppVersion, contextDevelopmentStage, null, null, null, null, null, null, null, null);
     }
 
     /**
      * Initialize a new instance of TrakerrClient with specified options. If null is passed to any of the optional parameters, the defaults are used.
      *
-     * @param apiKey                  (required) Specify the API key for this application.
+     * @param apiKey                  (required) specify the API key for this application.
+     * @param contextAppVersion       (optional) application version, defaults to 1.0.
+     * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
+     * @param contextAppSKU           (optional) the application sku for your program.
+     * @param contextTags             (optional) Optional list of string tags on the module or part of project you are logging events on. It is recommended at least giving giving the module and the submodule as tags. IE: ["mysql", "payment"]
+     */
+    public TrakerrClient(String apiKey, String contextAppVersion, String contextDevelopmentStage, String contextAppSKU, List<String> contextTags) {
+        this(apiKey, null, contextAppVersion, contextDevelopmentStage, null, null, null, null, null, null, contextAppSKU, contextTags);
+    }
+
+
+    /**
+     * Initialize a new instance of TrakerrClient with specified options. If null is passed to any of the optional parameters, the defaults are used.
+     *
+     * @param apiKey                  (required) specify the API key for this application.
      * @param url                     (optional) URL to the Trakerr host, pass null to use default.
      * @param contextAppVersion       (optional) application version, defaults to 1.0.
      * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
@@ -51,7 +72,9 @@ public class TrakerrClient {
      * @param contextDataCenter       (optional) data center.
      * @param contextDataCenterRegion (optional) data center region.
      */
-    private TrakerrClient(String apiKey, String url, String contextAppVersion, String contextDevelopmentStage, String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion, String contextDataCenter, String contextDataCenterRegion) {
+    private TrakerrClient(String apiKey, String url, String contextAppVersion, String contextDevelopmentStage,
+                          String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion,
+                          String contextDataCenter, String contextDataCenterRegion, String contextAppSKU, List<String> contextTags) {
         this.setApiKey(apiKey);
         this.setContextAppVersion(contextAppVersion == null ? "1.0" : contextAppVersion);
         this.setContextDevelopmentStage(contextDevelopmentStage == null ? "development" : contextDevelopmentStage);
@@ -64,11 +87,13 @@ public class TrakerrClient {
         }
 
         try {
-            this.setContextEnvHostname(contextEnvHostname == null ? InetAddress.getLocalHost().getHostName() : contextEnvHostname);
+            this.setContextEnvHostname(
+                    contextEnvHostname == null ? InetAddress.getLocalHost().getHostName() : contextEnvHostname);
         } catch (UnknownHostException ignored) {
         }
         this.setContextAppOS(contextAppOS == null ? System.getProperty("os.name") : contextAppOS);
-        this.setContextAppOSVersion(contextAppOSVersion == null ? System.getProperty("os.version") : contextAppOSVersion);
+        this.setContextAppOSVersion(
+                contextAppOSVersion == null ? System.getProperty("os.version") : contextAppOSVersion);
         this.setContextDataCenter(contextDataCenter);
         this.setContextDataCenterRegion(contextDataCenterRegion);
 
@@ -78,6 +103,15 @@ public class TrakerrClient {
         }
 
         this.setEventsApi(new EventsApi(client));
+
+        try {
+            sunmsbean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+            sunmsbean.getSystemCpuLoad();//May need to gauge util on first event by starting the performance watch.
+
+        } catch (Exception e) {
+            //bean doesn't implement the low level sun interface,
+            //probably because it's not oracle/java and like openjdk or something.
+        }
     }
 
     /**
@@ -89,11 +123,16 @@ public class TrakerrClient {
      * @param eventMessage   Message, defaults to "unknown"
      * @return Newly created AppEvent
      */
-    public AppEvent createAppEvent(AppEvent.LogLevelEnum logLevel, String classification, String eventType, String eventMessage) {
-        if (logLevel == null) logLevel = AppEvent.LogLevelEnum.ERROR;
-        if (classification == null) classification = "issue";
-        if (eventType == null) eventType = "unknown";
-        if (eventMessage == null) eventMessage = "unknown";
+    public AppEvent createAppEvent(AppEvent.LogLevelEnum logLevel, String classification, String eventType,
+                                   String eventMessage) {
+        if (logLevel == null)
+            logLevel = AppEvent.LogLevelEnum.ERROR;
+        if (classification == null)
+            classification = "issue";
+        if (eventType == null)
+            eventType = "unknown";
+        if (eventMessage == null)
+            eventMessage = "unknown";
 
         AppEvent event = new AppEvent();
 
@@ -144,7 +183,8 @@ public class TrakerrClient {
      * @param callback       callback result to the async call
      * @throws RuntimeException when an error occurs sending the exception
      */
-    public void sendExceptionAsync(AppEvent.LogLevelEnum logLevel, String classification, Throwable e, ApiCallback<Void> callback) {
+    public void sendExceptionAsync(AppEvent.LogLevelEnum logLevel, String classification, Throwable e,
+                                   ApiCallback<Void> callback) {
         AppEvent event = createAppEvent(logLevel, classification, e.getClass().getName(), e.getMessage());
         event.setEventStacktrace(EventTraceBuilder.getEventTraces(e));
         try {
@@ -187,30 +227,57 @@ public class TrakerrClient {
      * @return The AppEvent object after all of it's properties have been filled.
      */
     private AppEvent FillDefaults(AppEvent appEvent) {
-        if (appEvent.getApiKey() == null) appEvent.setApiKey(this.getApiKey());
+        if (appEvent.getApiKey() == null)
+            appEvent.setApiKey(this.getApiKey());
 
+        if (appEvent.getContextAppVersion() == null)
+            appEvent.setContextAppVersion(this.getContextAppVersion());
+        if (appEvent.getDeploymentStage() == null)
+            appEvent.setDeploymentStage(this.getContextDevelopmentStage());
 
-        if (appEvent.getContextAppVersion() == null) appEvent.setContextAppVersion(this.getContextAppVersion());
-        if (appEvent.getDeploymentStage() == null) appEvent.setDeploymentStage(this.getContextDevelopmentStage());
-
-        if (appEvent.getContextEnvLanguage() == null) appEvent.setContextEnvLanguage(this.getContextEnvLanguage());
-        if (appEvent.getContextEnvName() == null) appEvent.setContextEnvName(this.getContextEnvName());
-        if (appEvent.getContextEnvVersion() == null) appEvent.setContextEnvVersion(this.getContextEnvVersion());
-        if (appEvent.getContextEnvHostname() == null) appEvent.setContextEnvHostname(this.getContextEnvHostname());
+        if (appEvent.getContextEnvLanguage() == null)
+            appEvent.setContextEnvLanguage(this.getContextEnvLanguage());
+        if (appEvent.getContextEnvName() == null)
+            appEvent.setContextEnvName(this.getContextEnvName());
+        if (appEvent.getContextEnvVersion() == null)
+            appEvent.setContextEnvVersion(this.getContextEnvVersion());
+        if (appEvent.getContextEnvHostname() == null)
+            appEvent.setContextEnvHostname(this.getContextEnvHostname());
 
         if (appEvent.getContextAppOS() == null) {
             appEvent.setContextAppOS(this.getContextAppOS());
             appEvent.setContextAppOSVersion(this.getContextAppOSVersion());
         }
 
-        if (appEvent.getContextAppBrowser() == null) appEvent.setContextAppBrowser(this.getContextAppBrowser());
-        if (appEvent.getContextAppBrowserVersion() == null) appEvent.setContextAppBrowserVersion(this.getContextAppBrowserVersion());
+        if (appEvent.getContextAppBrowser() == null)
+            appEvent.setContextAppBrowser(this.getContextAppBrowser());
+        if (appEvent.getContextAppBrowserVersion() == null)
+            appEvent.setContextAppBrowserVersion(this.getContextAppBrowserVersion());
 
-        if (appEvent.getContextDataCenter() == null) appEvent.setContextDataCenter(getContextDataCenter());
+        if (appEvent.getContextDataCenter() == null)
+            appEvent.setContextDataCenter(this.getContextDataCenter());
         if (appEvent.getContextDataCenterRegion() == null)
             appEvent.setContextDataCenterRegion(getContextDataCenterRegion());
 
-        if (appEvent.getEventTime() == null) appEvent.setEventTime(System.currentTimeMillis());
+        if (appEvent.getEventTime() == null)
+            appEvent.setEventTime(System.currentTimeMillis());
+
+        if (appEvent.getContextAppSku() == null)
+            appEvent.setContextAppSku(this.getContextAppSKU());
+        if (appEvent.getContextTags() == null)
+            appEvent.setContextTags(this.getContextTags());
+
+        if (appEvent.getContextCpuPercentage() == null) {
+
+            if (sunmsbean != null) {
+                double cpu = sunmsbean.getSystemCpuLoad();
+                appEvent.setContextCpuPercentage(cpu >= 0 ? (int) Math.round(cpu * 100) : null);
+
+
+                int mempercent = (int)Math.round(( (double) (sunmsbean.getTotalPhysicalMemorySize() - sunmsbean.getFreeSwapSpaceSize()) / sunmsbean.getTotalPhysicalMemorySize()) * 100);
+                appEvent.setContextMemoryPercentage(mempercent);
+            }
+        }
 
         return appEvent;
     }
@@ -382,10 +449,26 @@ public class TrakerrClient {
     }
 
     public String getContextAppBrowserVersion() {
-        return ContextAppBrowserVersion;
+        return this.contextAppBrowserVersion;
     }
 
     public void setContextAppBrowserVersion(String contextAppBrowserVersion) {
-        ContextAppBrowserVersion = contextAppBrowserVersion;
+        this.contextAppBrowserVersion = contextAppBrowserVersion;
+    }
+
+    public String getContextAppSKU() {
+        return this.contextAppSKU;
+    }
+
+    public void setContextAppSKU(String contextAppSKU) {
+        this.contextAppSKU = contextAppSKU;
+    }
+
+    public List<String> getContextTags() {
+        return this.contextTags;
+    }
+
+    public void setContextTags(List<String> contextTags) {
+        this.contextTags = contextTags;
     }
 }

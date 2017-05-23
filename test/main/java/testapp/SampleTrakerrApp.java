@@ -59,6 +59,7 @@ public class SampleTrakerrApp {
         AppEvent event = client.createAppEvent(AppEvent.LogLevelEnum.INFO, "User got to this state.","System.Exception", "Some message");
         event.eventUser("john@trakerr.io");
         event.eventSession("17");
+        event.setContextOperationTimeMillis(1000L);
 
         CustomStringData msg = new CustomStringData();
         msg.customData1("I'm a custom string!");

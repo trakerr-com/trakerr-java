@@ -1,16 +1,45 @@
 package io.trakerr.client;
 
 import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Dispatcher;
+import com.squareup.okhttp.OkHttpClient;
 import io.trakerr.*;
 import io.trakerr.model.AppEvent;
 
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * Client to create and send events to Trakerr.
  **/
 public class TrakerrClient {
+    private static final ApiCallback<Void> NULL_CALLBACK = new ApiCallback<Void>() {
+        @Override
+        public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+
+        }
+
+        @Override
+        public void onSuccess(Void result, int statusCode, Map<String, List<String>> responseHeaders) {
+
+        }
+
+        @Override
+        public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+
+        }
+
+        @Override
+        public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
+        }
+    };
     private String apiKey;
     private String contextAppVersion;
     private String contextDevelopmentStage;
@@ -21,26 +50,42 @@ public class TrakerrClient {
     private String contextAppOS;
     private String contextAppOSVersion;
     private String contextAppBrowser;
-    private String ContextAppBrowserVersion;
+    private String contextAppBrowserVersion;
     private String contextDataCenter;
     private String contextDataCenterRegion;
+    private String contextAppSKU;
+    private List<String> contextTags;
     private EventsApi eventsApi;
 
     /**
      * Initialize a new instance of TrakerrClient with specified options. If null is passed to any of the optional parameters, the defaults are used.
      *
-     * @param apiKey                  (required) Specify the API key for this application.
+     * @param apiKey                  (required) specify the API key for this application.
      * @param contextAppVersion       (optional) application version, defaults to 1.0.
      * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
      */
     public TrakerrClient(String apiKey, String contextAppVersion, String contextDevelopmentStage) {
-        this(apiKey, null, contextAppVersion, contextDevelopmentStage, null, null, null, null, null, null);
+        this(apiKey, null, contextAppVersion, contextDevelopmentStage, null, null, null, null, null, null, null, null);
     }
 
     /**
      * Initialize a new instance of TrakerrClient with specified options. If null is passed to any of the optional parameters, the defaults are used.
      *
-     * @param apiKey                  (required) Specify the API key for this application.
+     * @param apiKey                  (required) specify the API key for this application.
+     * @param contextAppVersion       (optional) application version, defaults to 1.0.
+     * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
+     * @param contextAppSKU           (optional) the application sku for your program.
+     * @param contextTags             (optional) Optional list of string tags on the module or part of project you are logging events on. It is recommended at least giving giving the module and the submodule as tags. IE: ["mysql", "payment"]
+     */
+    public TrakerrClient(String apiKey, String contextAppVersion, String contextDevelopmentStage, String contextAppSKU, List<String> contextTags) {
+        this(apiKey, null, contextAppVersion, contextDevelopmentStage, null, null, null, null, null, null, contextAppSKU, contextTags);
+    }
+
+
+    /**
+     * Initialize a new instance of TrakerrClient with specified options. If null is passed to any of the optional parameters, the defaults are used.
+     *
+     * @param apiKey                  (required) specify the API key for this application.
      * @param url                     (optional) URL to the Trakerr host, pass null to use default.
      * @param contextAppVersion       (optional) application version, defaults to 1.0.
      * @param contextDevelopmentStage (optional) environment name like "development", "staging", "production", defaults to "development".
@@ -51,7 +96,9 @@ public class TrakerrClient {
      * @param contextDataCenter       (optional) data center.
      * @param contextDataCenterRegion (optional) data center region.
      */
-    private TrakerrClient(String apiKey, String url, String contextAppVersion, String contextDevelopmentStage, String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion, String contextDataCenter, String contextDataCenterRegion) {
+    private TrakerrClient(String apiKey, String url, String contextAppVersion, String contextDevelopmentStage,
+                          String contextEnvVersion, String contextEnvHostname, String contextAppOS, String contextAppOSVersion,
+                          String contextDataCenter, String contextDataCenterRegion, String contextAppSKU, List<String> contextTags) {
         this.setApiKey(apiKey);
         this.setContextAppVersion(contextAppVersion == null ? "1.0" : contextAppVersion);
         this.setContextDevelopmentStage(contextDevelopmentStage == null ? "development" : contextDevelopmentStage);
@@ -64,11 +111,13 @@ public class TrakerrClient {
         }
 
         try {
-            this.setContextEnvHostname(contextEnvHostname == null ? InetAddress.getLocalHost().getHostName() : contextEnvHostname);
+            this.setContextEnvHostname(
+                    contextEnvHostname == null ? InetAddress.getLocalHost().getHostName() : contextEnvHostname);
         } catch (UnknownHostException ignored) {
         }
         this.setContextAppOS(contextAppOS == null ? System.getProperty("os.name") : contextAppOS);
-        this.setContextAppOSVersion(contextAppOSVersion == null ? System.getProperty("os.version") : contextAppOSVersion);
+        this.setContextAppOSVersion(
+                contextAppOSVersion == null ? System.getProperty("os.version") : contextAppOSVersion);
         this.setContextDataCenter(contextDataCenter);
         this.setContextDataCenterRegion(contextDataCenterRegion);
 
@@ -89,11 +138,16 @@ public class TrakerrClient {
      * @param eventMessage   Message, defaults to "unknown"
      * @return Newly created AppEvent
      */
-    public AppEvent createAppEvent(AppEvent.LogLevelEnum logLevel, String classification, String eventType, String eventMessage) {
-        if (logLevel == null) logLevel = AppEvent.LogLevelEnum.ERROR;
-        if (classification == null) classification = "issue";
-        if (eventType == null) eventType = "unknown";
-        if (eventMessage == null) eventMessage = "unknown";
+    public AppEvent createAppEvent(AppEvent.LogLevelEnum logLevel, String classification, String eventType,
+                                   String eventMessage) {
+        if (logLevel == null)
+            logLevel = AppEvent.LogLevelEnum.ERROR;
+        if (classification == null)
+            classification = "issue";
+        if (eventType == null)
+            eventType = "unknown";
+        if (eventMessage == null)
+            eventMessage = "unknown";
 
         AppEvent event = new AppEvent();
 
@@ -144,7 +198,8 @@ public class TrakerrClient {
      * @param callback       callback result to the async call
      * @throws RuntimeException when an error occurs sending the exception
      */
-    public void sendExceptionAsync(AppEvent.LogLevelEnum logLevel, String classification, Throwable e, ApiCallback<Void> callback) {
+    public void sendExceptionAsync(AppEvent.LogLevelEnum logLevel, String classification, Throwable e,
+                                   ApiCallback<Void> callback) {
         AppEvent event = createAppEvent(logLevel, classification, e.getClass().getName(), e.getMessage());
         event.setEventStacktrace(EventTraceBuilder.getEventTraces(e));
         try {
@@ -177,7 +232,7 @@ public class TrakerrClient {
         // fill defaults if not overridden in the appEvent being passed
         FillDefaults(appEvent);
 
-        return getEventsApi().eventsPostAsync(appEvent, callback);
+        return getEventsApi().eventsPostAsync(appEvent, callback == null ? NULL_CALLBACK : callback);
     }
 
     /**
@@ -187,30 +242,50 @@ public class TrakerrClient {
      * @return The AppEvent object after all of it's properties have been filled.
      */
     private AppEvent FillDefaults(AppEvent appEvent) {
-        if (appEvent.getApiKey() == null) appEvent.setApiKey(this.getApiKey());
+        if (appEvent.getApiKey() == null)
+            appEvent.setApiKey(this.getApiKey());
 
+        if (appEvent.getContextAppVersion() == null)
+            appEvent.setContextAppVersion(this.getContextAppVersion());
+        if (appEvent.getDeploymentStage() == null)
+            appEvent.setDeploymentStage(this.getContextDevelopmentStage());
 
-        if (appEvent.getContextAppVersion() == null) appEvent.setContextAppVersion(this.getContextAppVersion());
-        if (appEvent.getDeploymentStage() == null) appEvent.setDeploymentStage(this.getContextDevelopmentStage());
-
-        if (appEvent.getContextEnvLanguage() == null) appEvent.setContextEnvLanguage(this.getContextEnvLanguage());
-        if (appEvent.getContextEnvName() == null) appEvent.setContextEnvName(this.getContextEnvName());
-        if (appEvent.getContextEnvVersion() == null) appEvent.setContextEnvVersion(this.getContextEnvVersion());
-        if (appEvent.getContextEnvHostname() == null) appEvent.setContextEnvHostname(this.getContextEnvHostname());
+        if (appEvent.getContextEnvLanguage() == null)
+            appEvent.setContextEnvLanguage(this.getContextEnvLanguage());
+        if (appEvent.getContextEnvName() == null)
+            appEvent.setContextEnvName(this.getContextEnvName());
+        if (appEvent.getContextEnvVersion() == null)
+            appEvent.setContextEnvVersion(this.getContextEnvVersion());
+        if (appEvent.getContextEnvHostname() == null)
+            appEvent.setContextEnvHostname(this.getContextEnvHostname());
 
         if (appEvent.getContextAppOS() == null) {
             appEvent.setContextAppOS(this.getContextAppOS());
             appEvent.setContextAppOSVersion(this.getContextAppOSVersion());
         }
 
-        if (appEvent.getContextAppBrowser() == null) appEvent.setContextAppBrowser(this.getContextAppBrowser());
-        if (appEvent.getContextAppBrowserVersion() == null) appEvent.setContextAppBrowserVersion(this.getContextAppBrowserVersion());
+        if (appEvent.getContextAppBrowser() == null)
+            appEvent.setContextAppBrowser(this.getContextAppBrowser());
+        if (appEvent.getContextAppBrowserVersion() == null)
+            appEvent.setContextAppBrowserVersion(this.getContextAppBrowserVersion());
 
-        if (appEvent.getContextDataCenter() == null) appEvent.setContextDataCenter(getContextDataCenter());
+        if (appEvent.getContextDataCenter() == null)
+            appEvent.setContextDataCenter(this.getContextDataCenter());
         if (appEvent.getContextDataCenterRegion() == null)
             appEvent.setContextDataCenterRegion(getContextDataCenterRegion());
 
-        if (appEvent.getEventTime() == null) appEvent.setEventTime(System.currentTimeMillis());
+        if (appEvent.getEventTime() == null)
+            appEvent.setEventTime(System.currentTimeMillis());
+
+        if (appEvent.getContextAppSku() == null)
+            appEvent.setContextAppSku(this.getContextAppSKU());
+        if (appEvent.getContextTags() == null)
+            appEvent.setContextTags(this.getContextTags());
+
+        if (appEvent.getContextCpuPercentage() == null) {
+            appEvent.setContextCpuPercentage(CpuUsageTracker.CPU_USAGE_TRACKER.getCurrentCpuUsage());
+            appEvent.setContextMemoryPercentage(CpuUsageTracker.CPU_USAGE_TRACKER.getCurrentMemUsage());
+        }
 
         return appEvent;
     }
@@ -382,10 +457,88 @@ public class TrakerrClient {
     }
 
     public String getContextAppBrowserVersion() {
-        return ContextAppBrowserVersion;
+        return this.contextAppBrowserVersion;
     }
 
     public void setContextAppBrowserVersion(String contextAppBrowserVersion) {
-        ContextAppBrowserVersion = contextAppBrowserVersion;
+        this.contextAppBrowserVersion = contextAppBrowserVersion;
+    }
+
+    public String getContextAppSKU() {
+        return this.contextAppSKU;
+    }
+
+    public void setContextAppSKU(String contextAppSKU) {
+        this.contextAppSKU = contextAppSKU;
+    }
+
+    public List<String> getContextTags() {
+        return this.contextTags;
+    }
+
+    public void setContextTags(List<String> contextTags) {
+        this.contextTags = contextTags;
+    }
+
+    /**
+     * Initiates an orderly shutdown in which previously submitted
+     * tasks are executed, but no new tasks will be accepted.
+     * Invocation has no additional effect if already shut down.
+     *
+     * <p>This method does not wait for previously submitted tasks to
+     * complete execution.  Use {@link #awaitTermination awaitTermination}
+     * to do that.</p>
+     *
+     * @param shutdownNow Attempts to stop all actively executing tasks and halts the processing of waiting tasks.
+
+     */
+    public void shutdown(boolean shutdownNow) {
+        ExecutorService executorService = getExecutorService();
+
+        if(executorService != null) {
+            if(shutdownNow) {
+                executorService.shutdownNow();
+            } else {
+                executorService.shutdown();
+            }
+        }
+
+        CpuUsageTracker.CPU_USAGE_TRACKER.shutdown();
+    }
+
+    /**
+     * Blocks until all tasks have completed execution after a shutdown
+     * request, or the timeout occurs, or the current thread is
+     * interrupted, whichever happens first.
+     *
+     * @param timeout the maximum time to wait
+     * @param unit the time unit of the timeout argument
+     * @return {@code true} if this executor terminated and
+     *         {@code false} if the timeout elapsed before termination
+     * @throws InterruptedException if interrupted while waiting
+     */
+    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+        ExecutorService executorService = getExecutorService();
+        if(executorService != null) {
+            return executorService.awaitTermination(timeout, unit);
+        } else {
+            return true;
+        }
+    }
+
+    private Dispatcher getDispatcher() {
+        ApiClient apiClient = this.eventsApi.getApiClient();
+        if(apiClient != null) {
+            OkHttpClient httpClient = apiClient.getHttpClient();
+            if(httpClient != null) {
+                return httpClient.getDispatcher();
+            }
+        }
+        return null;
+    }
+
+    private ExecutorService getExecutorService() {
+        Dispatcher dispatcher = getDispatcher();
+        return dispatcher != null ? dispatcher.getExecutorService() : null;
     }
 }

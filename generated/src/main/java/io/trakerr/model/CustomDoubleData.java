@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * CustomDoubleData
  */
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-03-13T16:49:29.032-07:00")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-05-05T15:16:44.225-07:00")
 public class CustomDoubleData   {
   @SerializedName("customData1")
   private Double customData1 = null;

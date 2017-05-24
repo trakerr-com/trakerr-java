@@ -31,12 +31,14 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.trakerr.model.CustomData;
 import io.trakerr.model.Stacktrace;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * AppEvent
  */
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-03-13T16:49:29.032-07:00")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-05-05T15:16:44.225-07:00")
 public class AppEvent   {
   @SerializedName("apiKey")
   private String apiKey = null;
@@ -132,6 +134,30 @@ public class AppEvent   {
   @SerializedName("contextDataCenterRegion")
   private String contextDataCenterRegion = null;
 
+  @SerializedName("contextTags")
+  private List<String> contextTags = new ArrayList<String>();
+
+  @SerializedName("contextURL")
+  private String contextURL = null;
+
+  @SerializedName("contextOperationTimeMillis")
+  private Long contextOperationTimeMillis = null;
+
+  @SerializedName("contextCpuPercentage")
+  private Integer contextCpuPercentage = null;
+
+  @SerializedName("contextMemoryPercentage")
+  private Integer contextMemoryPercentage = null;
+
+  @SerializedName("contextCrossAppCorrelationId")
+  private String contextCrossAppCorrelationId = null;
+
+  @SerializedName("contextDevice")
+  private String contextDevice = null;
+
+  @SerializedName("contextAppSku")
+  private String contextAppSku = null;
+
   @SerializedName("customProperties")
   private CustomData customProperties = null;
 
@@ -180,10 +206,10 @@ public class AppEvent   {
   }
 
    /**
-   * (optional) one of 'error' or a custom string for non-errors, defaults to 'error'
+   * (optional) one of 'issue' or a custom string for non-issues, defaults to 'issue'
    * @return classification
   **/
-  @ApiModelProperty(example = "null", required = true, value = "(optional) one of 'error' or a custom string for non-errors, defaults to 'error'")
+  @ApiModelProperty(example = "null", required = true, value = "(optional) one of 'issue' or a custom string for non-issues, defaults to 'issue'")
   public String getClassification() {
     return classification;
   }
@@ -516,6 +542,155 @@ public class AppEvent   {
     this.contextDataCenterRegion = contextDataCenterRegion;
   }
 
+  public AppEvent contextTags(List<String> contextTags) {
+    this.contextTags = contextTags;
+    return this;
+  }
+
+  public AppEvent addContextTagsItem(String contextTagsItem) {
+    this.contextTags.add(contextTagsItem);
+    return this;
+  }
+
+   /**
+   * Get contextTags
+   * @return contextTags
+  **/
+  @ApiModelProperty(example = "null", value = "")
+  public List<String> getContextTags() {
+    return contextTags;
+  }
+
+  public void setContextTags(List<String> contextTags) {
+    this.contextTags = contextTags;
+  }
+
+  public AppEvent contextURL(String contextURL) {
+    this.contextURL = contextURL;
+    return this;
+  }
+
+   /**
+   * (optional) The full URL when running in a browser when the event was generated.
+   * @return contextURL
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) The full URL when running in a browser when the event was generated.")
+  public String getContextURL() {
+    return contextURL;
+  }
+
+  public void setContextURL(String contextURL) {
+    this.contextURL = contextURL;
+  }
+
+  public AppEvent contextOperationTimeMillis(Long contextOperationTimeMillis) {
+    this.contextOperationTimeMillis = contextOperationTimeMillis;
+    return this;
+  }
+
+   /**
+   * (optional) duration that this event took to occur in millis. Example - database call time in millis.
+   * @return contextOperationTimeMillis
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) duration that this event took to occur in millis. Example - database call time in millis.")
+  public Long getContextOperationTimeMillis() {
+    return contextOperationTimeMillis;
+  }
+
+  public void setContextOperationTimeMillis(Long contextOperationTimeMillis) {
+    this.contextOperationTimeMillis = contextOperationTimeMillis;
+  }
+
+  public AppEvent contextCpuPercentage(Integer contextCpuPercentage) {
+    this.contextCpuPercentage = contextCpuPercentage;
+    return this;
+  }
+
+   /**
+   * (optional) CPU utilization as a percent when event occured
+   * @return contextCpuPercentage
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) CPU utilization as a percent when event occured")
+  public Integer getContextCpuPercentage() {
+    return contextCpuPercentage;
+  }
+
+  public void setContextCpuPercentage(Integer contextCpuPercentage) {
+    this.contextCpuPercentage = contextCpuPercentage;
+  }
+
+  public AppEvent contextMemoryPercentage(Integer contextMemoryPercentage) {
+    this.contextMemoryPercentage = contextMemoryPercentage;
+    return this;
+  }
+
+   /**
+   * (optional) Memory utilization as a percent when event occured
+   * @return contextMemoryPercentage
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) Memory utilization as a percent when event occured")
+  public Integer getContextMemoryPercentage() {
+    return contextMemoryPercentage;
+  }
+
+  public void setContextMemoryPercentage(Integer contextMemoryPercentage) {
+    this.contextMemoryPercentage = contextMemoryPercentage;
+  }
+
+  public AppEvent contextCrossAppCorrelationId(String contextCrossAppCorrelationId) {
+    this.contextCrossAppCorrelationId = contextCrossAppCorrelationId;
+    return this;
+  }
+
+   /**
+   * (optional) Cross application correlation ID
+   * @return contextCrossAppCorrelationId
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) Cross application correlation ID")
+  public String getContextCrossAppCorrelationId() {
+    return contextCrossAppCorrelationId;
+  }
+
+  public void setContextCrossAppCorrelationId(String contextCrossAppCorrelationId) {
+    this.contextCrossAppCorrelationId = contextCrossAppCorrelationId;
+  }
+
+  public AppEvent contextDevice(String contextDevice) {
+    this.contextDevice = contextDevice;
+    return this;
+  }
+
+   /**
+   * (optional) Device information
+   * @return contextDevice
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) Device information")
+  public String getContextDevice() {
+    return contextDevice;
+  }
+
+  public void setContextDevice(String contextDevice) {
+    this.contextDevice = contextDevice;
+  }
+
+  public AppEvent contextAppSku(String contextAppSku) {
+    this.contextAppSku = contextAppSku;
+    return this;
+  }
+
+   /**
+   * (optional) Application SKU
+   * @return contextAppSku
+  **/
+  @ApiModelProperty(example = "null", value = "(optional) Application SKU")
+  public String getContextAppSku() {
+    return contextAppSku;
+  }
+
+  public void setContextAppSku(String contextAppSku) {
+    this.contextAppSku = contextAppSku;
+  }
+
   public AppEvent customProperties(CustomData customProperties) {
     this.customProperties = customProperties;
     return this;
@@ -583,13 +758,21 @@ public class AppEvent   {
         Objects.equals(this.contextAppOSVersion, appEvent.contextAppOSVersion) &&
         Objects.equals(this.contextDataCenter, appEvent.contextDataCenter) &&
         Objects.equals(this.contextDataCenterRegion, appEvent.contextDataCenterRegion) &&
+        Objects.equals(this.contextTags, appEvent.contextTags) &&
+        Objects.equals(this.contextURL, appEvent.contextURL) &&
+        Objects.equals(this.contextOperationTimeMillis, appEvent.contextOperationTimeMillis) &&
+        Objects.equals(this.contextCpuPercentage, appEvent.contextCpuPercentage) &&
+        Objects.equals(this.contextMemoryPercentage, appEvent.contextMemoryPercentage) &&
+        Objects.equals(this.contextCrossAppCorrelationId, appEvent.contextCrossAppCorrelationId) &&
+        Objects.equals(this.contextDevice, appEvent.contextDevice) &&
+        Objects.equals(this.contextAppSku, appEvent.contextAppSku) &&
         Objects.equals(this.customProperties, appEvent.customProperties) &&
         Objects.equals(this.customSegments, appEvent.customSegments);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(apiKey, logLevel, classification, eventType, eventMessage, eventTime, eventStacktrace, eventUser, eventSession, contextAppVersion, deploymentStage, contextEnvName, contextEnvLanguage, contextEnvVersion, contextEnvHostname, contextAppBrowser, contextAppBrowserVersion, contextAppOS, contextAppOSVersion, contextDataCenter, contextDataCenterRegion, customProperties, customSegments);
+    return Objects.hash(apiKey, logLevel, classification, eventType, eventMessage, eventTime, eventStacktrace, eventUser, eventSession, contextAppVersion, deploymentStage, contextEnvName, contextEnvLanguage, contextEnvVersion, contextEnvHostname, contextAppBrowser, contextAppBrowserVersion, contextAppOS, contextAppOSVersion, contextDataCenter, contextDataCenterRegion, contextTags, contextURL, contextOperationTimeMillis, contextCpuPercentage, contextMemoryPercentage, contextCrossAppCorrelationId, contextDevice, contextAppSku, customProperties, customSegments);
   }
 
   @Override
@@ -618,6 +801,14 @@ public class AppEvent   {
     sb.append("    contextAppOSVersion: ").append(toIndentedString(contextAppOSVersion)).append("\n");
     sb.append("    contextDataCenter: ").append(toIndentedString(contextDataCenter)).append("\n");
     sb.append("    contextDataCenterRegion: ").append(toIndentedString(contextDataCenterRegion)).append("\n");
+    sb.append("    contextTags: ").append(toIndentedString(contextTags)).append("\n");
+    sb.append("    contextURL: ").append(toIndentedString(contextURL)).append("\n");
+    sb.append("    contextOperationTimeMillis: ").append(toIndentedString(contextOperationTimeMillis)).append("\n");
+    sb.append("    contextCpuPercentage: ").append(toIndentedString(contextCpuPercentage)).append("\n");
+    sb.append("    contextMemoryPercentage: ").append(toIndentedString(contextMemoryPercentage)).append("\n");
+    sb.append("    contextCrossAppCorrelationId: ").append(toIndentedString(contextCrossAppCorrelationId)).append("\n");
+    sb.append("    contextDevice: ").append(toIndentedString(contextDevice)).append("\n");
+    sb.append("    contextAppSku: ").append(toIndentedString(contextAppSku)).append("\n");
     sb.append("    customProperties: ").append(toIndentedString(customProperties)).append("\n");
     sb.append("    customSegments: ").append(toIndentedString(customSegments)).append("\n");
     sb.append("}");

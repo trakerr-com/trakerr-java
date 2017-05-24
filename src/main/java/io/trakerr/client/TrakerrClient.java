@@ -8,12 +8,34 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 
 
 /**
  * Client to create and send events to Trakerr.
  **/
 public class TrakerrClient {
+    private static final ApiCallback<Void> NULL_CALLBACK = new ApiCallback<Void>() {
+        @Override
+        public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+
+        }
+
+        @Override
+        public void onSuccess(Void result, int statusCode, Map<String, List<String>> responseHeaders) {
+
+        }
+
+        @Override
+        public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+
+        }
+
+        @Override
+        public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
+        }
+    };
     private String apiKey;
     private String contextAppVersion;
     private String contextDevelopmentStage;
@@ -217,7 +239,7 @@ public class TrakerrClient {
         // fill defaults if not overridden in the appEvent being passed
         FillDefaults(appEvent);
 
-        return getEventsApi().eventsPostAsync(appEvent, callback);
+        return getEventsApi().eventsPostAsync(appEvent, callback == null ? NULL_CALLBACK : callback);
     }
 
     /**

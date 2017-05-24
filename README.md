@@ -1,8 +1,8 @@
 # Trakerr - Java API client
 
 ## Requirements
-Java 1.7+
-log4j 1.2 (if you want to use our log4j functionality)
+- Java 1.7+
+- log4j 1.2 (if you want to use our log4j functionality)
 
 ## 3-minute Integration Guide using maven and log4j
 This is a combination of using maven and log4j. This guide assumes you have log4j set up. If this is your first time setting up log4j check out the log4j [docs](https://logging.apache.org/log4j/1.2/). Note: our plugin is for log4j 1.2, although you may or may not be able to get it to work with log4j 2. A plugin for log4j 2 is planned for a future release.
@@ -70,9 +70,12 @@ Then you can simply catch an exception like so:
             throw new Exception("This is a test exception.");
         } catch (Exception e) {
             // First argument is the classification ("Error", "Warn" etc.), you can also pass a custom classification if required
-            client.sendException("Error", e);
+            //client.sendException("Error", e); For a syncronous call
+            client.sendExceptionAsync("Error", e)
         }
 ```
+
+For any asyncronous call the threadpool and connection pool limits are set to 5.
 
 ### Option-3: Send an exception programmatically but with custom parameters
 Sending an exception programmatically requires a TrakerrClient to send the error to Trakerr. The example below illustrates how to do this.
@@ -104,7 +107,7 @@ Afterwards, you can create your own app event:
             exceptionEvent.setCustomProperties(customProperties);
 
             // send the event
-            client.sendEvent(exceptionEvent);
+            client.sendEventAsync(exceptionEvent);
         }
 ```
 

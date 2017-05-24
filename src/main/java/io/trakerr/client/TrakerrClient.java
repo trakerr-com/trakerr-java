@@ -203,7 +203,7 @@ public class TrakerrClient {
         AppEvent event = createAppEvent(logLevel, classification, e.getClass().getName(), e.getMessage());
         event.setEventStacktrace(EventTraceBuilder.getEventTraces(e));
         try {
-            sendEventAsync(event, callback);
+            sendEventAsync(event, callback == null ? NULL_CALLBACK : callback);
         } catch (ApiException apiException) {
             throw new RuntimeException(apiException.getMessage(), apiException);
         }

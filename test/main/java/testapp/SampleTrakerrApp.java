@@ -32,7 +32,7 @@ public class SampleTrakerrApp {
         try {
             throw new Exception("This is a test exception.");
         } catch(Exception e) {
-            client.sendException(AppEvent.LogLevelEnum.WARNING, null, e);
+            client.sendExceptionAsync(AppEvent.LogLevelEnum.WARNING, null, e, TrakerrClient.NULL_CALLBACK);
             System.out.println("Test exception sent.");
         }
 

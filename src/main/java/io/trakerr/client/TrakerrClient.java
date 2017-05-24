@@ -57,8 +57,6 @@ public class TrakerrClient {
     private List<String> contextTags;
     private EventsApi eventsApi;
 
-    private com.sun.management.OperatingSystemMXBean sunmsbean;
-
     /**
      * Initialize a new instance of TrakerrClient with specified options. If null is passed to any of the optional parameters, the defaults are used.
      *
@@ -129,15 +127,6 @@ public class TrakerrClient {
         }
 
         this.setEventsApi(new EventsApi(client));
-
-        try {
-            sunmsbean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-            sunmsbean.getSystemCpuLoad();//May need to gauge util on first event by starting the performance watch.
-
-        } catch (Exception e) {
-            //bean doesn't implement the low level sun interface,
-            //probably because it's not oracle/java and like openjdk or another implimentation.
-        }
     }
 
     /**
@@ -294,20 +283,8 @@ public class TrakerrClient {
             appEvent.setContextTags(this.getContextTags());
 
         if (appEvent.getContextCpuPercentage() == null) {
-
-            if (sunmsbean != null) {
-                try {
-                    double cpu = sunmsbean.getSystemCpuLoad();
-                    appEvent.setContextCpuPercentage(cpu >= 0 ? (int) Math.round(cpu * 100) : null);
-
-
-                    int mempercent = (int) Math.round(((double) (sunmsbean.getTotalPhysicalMemorySize() - sunmsbean.getFreeSwapSpaceSize()) / sunmsbean.getTotalPhysicalMemorySize()) * 100);
-                    appEvent.setContextMemoryPercentage(mempercent);
-                } catch (Exception e) {
-                    //Issue with using the initialized low level library.
-                }
-
-            }
+            appEvent.setContextCpuPercentage(CpuUsageTracker.CPU_USAGE_TRACKER.getCurrentCpuUsage());
+            appEvent.setContextMemoryPercentage(CpuUsageTracker.CPU_USAGE_TRACKER.getCurrentMemUsage());
         }
 
         return appEvent;
@@ -525,6 +502,8 @@ public class TrakerrClient {
                 executorService.shutdown();
             }
         }
+
+        CpuUsageTracker.CPU_USAGE_TRACKER.shutdown();
     }
 
     /**

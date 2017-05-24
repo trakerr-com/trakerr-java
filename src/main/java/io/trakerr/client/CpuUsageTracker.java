@@ -2,7 +2,7 @@ package io.trakerr.client;
 
 import java.lang.management.ManagementFactory;
 
-public class CpuUsageTracker {
+class CpuUsageTracker {
     public static CpuUsageTracker CPU_USAGE_TRACKER = new CpuUsageTracker(5000);
 
     private CpuUsageTrackerThread cpuTracker;

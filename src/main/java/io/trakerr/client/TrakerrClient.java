@@ -1,6 +1,8 @@
 package io.trakerr.client;
 
 import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Dispatcher;
+import com.squareup.okhttp.OkHttpClient;
 import io.trakerr.*;
 import io.trakerr.model.AppEvent;
 
@@ -9,6 +11,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -497,5 +501,65 @@ public class TrakerrClient {
 
     public void setContextTags(List<String> contextTags) {
         this.contextTags = contextTags;
+    }
+
+    /**
+     * Initiates an orderly shutdown in which previously submitted
+     * tasks are executed, but no new tasks will be accepted.
+     * Invocation has no additional effect if already shut down.
+     *
+     * <p>This method does not wait for previously submitted tasks to
+     * complete execution.  Use {@link #awaitTermination awaitTermination}
+     * to do that.</p>
+     *
+     * @param shutdownNow Attempts to stop all actively executing tasks and halts the processing of waiting tasks.
+
+     */
+    public void shutdown(boolean shutdownNow) {
+        ExecutorService executorService = getExecutorService();
+
+        if(executorService != null) {
+            if(shutdownNow) {
+                executorService.shutdownNow();
+            } else {
+                executorService.shutdown();
+            }
+        }
+    }
+
+    /**
+     * Blocks until all tasks have completed execution after a shutdown
+     * request, or the timeout occurs, or the current thread is
+     * interrupted, whichever happens first.
+     *
+     * @param timeout the maximum time to wait
+     * @param unit the time unit of the timeout argument
+     * @return {@code true} if this executor terminated and
+     *         {@code false} if the timeout elapsed before termination
+     * @throws InterruptedException if interrupted while waiting
+     */
+    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+        ExecutorService executorService = getExecutorService();
+        if(executorService != null) {
+            return executorService.awaitTermination(timeout, unit);
+        } else {
+            return true;
+        }
+    }
+
+    private Dispatcher getDispatcher() {
+        ApiClient apiClient = this.eventsApi.getApiClient();
+        if(apiClient != null) {
+            OkHttpClient httpClient = apiClient.getHttpClient();
+            if(httpClient != null) {
+                return httpClient.getDispatcher();
+            }
+        }
+        return null;
+    }
+
+    private ExecutorService getExecutorService() {
+        Dispatcher dispatcher = getDispatcher();
+        return dispatcher != null ? dispatcher.getExecutorService() : null;
     }
 }

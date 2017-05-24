@@ -22,12 +22,13 @@ public class TrakerrClient {
     private static final ApiCallback<Void> NULL_CALLBACK = new ApiCallback<Void>() {
         @Override
         public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+            System.out.println(statusCode);
 
         }
 
         @Override
         public void onSuccess(Void result, int statusCode, Map<String, List<String>> responseHeaders) {
-
+            System.out.println(statusCode);
         }
 
         @Override

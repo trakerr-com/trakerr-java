@@ -2,12 +2,16 @@ package testapp;
 
 import io.trakerr.client.*;
 import io.trakerr.ApiException;
-import io.trakerr.ApiResponse;
+//import io.trakerr.ApiResponse; For synchronized calls.
 import io.trakerr.model.AppEvent;
 
 import io.trakerr.model.CustomData;
 import io.trakerr.model.CustomStringData;
 import org.apache.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import java.util.concurrent.*;
 
@@ -32,7 +36,7 @@ public class SampleTrakerrApp {
         try {
             throw new Exception("This is a test exception.");
         } catch(Exception e) {
-            client.sendExceptionAsync(AppEvent.LogLevelEnum.WARNING, null, e, TrakerrClient.NULL_CALLBACK);
+            client.sendExceptionAsync(AppEvent.LogLevelEnum.WARNING, null, e, null);
             System.out.println("Test exception sent.");
         }
 
@@ -46,9 +50,7 @@ public class SampleTrakerrApp {
             errevnt.eventSession("20");
 
             try {
-                ApiResponse<Void> response = client.sendEvent(errevnt);
-
-                System.out.println("Sent event: " + response.getStatusCode() + ", data: " + response.toString());
+                client.sendEventAsync(errevnt,null);
             } catch (ApiException senderr) {
                 senderr.printStackTrace();
             }
@@ -66,13 +68,17 @@ public class SampleTrakerrApp {
 
         event.customProperties(new CustomData().stringData(msg));
         try {
-            ApiResponse<Void> response = client.sendEvent(event);
-
-            System.out.println("Sent event: " + response.getStatusCode() + ", data: " + response.toString());
+            client.sendEventAsync(event, null);
         } catch (ApiException e) {
             e.printStackTrace();
         }
 
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            br.readLine();
+        } catch (IOException e){
+            //user input wait gone wrong.
+        }
         System.exit(0);
     }
 }

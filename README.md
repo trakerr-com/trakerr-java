@@ -12,7 +12,7 @@ Add us as a dependancy to your project's maven pom:
 <dependency>
     <groupId>io.trakerr</groupId>
     <artifactId>trakerr-java-client</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.0</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -71,7 +71,7 @@ Then you can simply catch an exception like so:
         } catch (Exception e) {
             // First argument is the classification ("Error", "Warn" etc.), you can also pass a custom classification if required
             //client.sendException("Error", e); For a syncronous call
-            client.sendExceptionAsync("Error", e)
+            client.sendExceptionAsync(AppEvent.LogLevelEnum.WARNING, null, e, null);
         }
 ```
 
@@ -107,7 +107,11 @@ Afterwards, you can create your own app event:
             exceptionEvent.setCustomProperties(customProperties);
 
             // send the event
-            client.sendEventAsync(exceptionEvent);
+            try {
+                client.sendEventAsync(errevnt,null);
+            } catch (ApiException senderr) {
+                senderr.printStackTrace();
+            }
         }
 ```
 
@@ -137,9 +141,7 @@ And then simply send the error. You may omit imports and the exception handling 
 
         AppEvent event = client.createAppEvent("debug", "foo", "bar");
         try {
-            ApiResponse<Void> response = client.sendEvent(event);
-
-            System.out.println("Sent event: " + response.getStatusCode() + ", data: " + response.toString());
+            client.sendEventAsync(event, null);
         } catch (ApiException e) {
             e.printStackTrace();
         }

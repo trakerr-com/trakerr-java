@@ -1,6 +1,24 @@
 # Trakerr - Java API client
 
-## Requirements
+Get your application events and errors to Trakerr via the *Trakerr API*.
+
+You can send both errors and non-errors (plain log statements, for example) to Trakerr with this API.
+
+## Overview
+
+The **3-minute guide** is primarily oriented around sending **errors or warnings** and do not permit additional parameters to be set. When using log4j in the 3-minute guide
+you can however set the level individually to DEBUG for the trakerr logger. **Option-3 in the detailed
+integration guide** shows how you could send a non-error (or any log statement) with additional parameters.
+
+The SDK takes performance impact seriously and all communication between the SDK <=> Trakerr avoids blocking the calling function. The SDK also applies asynchronous patterns where applicable.
+
+A Trakerr *Event* can consist of various parameters as described here in [AppEvent](https://github.com/trakerr-io/trakerr-java/blob/master/generated/docs/AppEvent.md).
+Some of these parameters are populated by default and others will need to be supplied by you.
+
+Since some of these parameters are common across all event's, the API has the option of setting these on the
+TrakerrClient instance (described towards the bottom) and offers a factory API for creating AppEvent's.
+
+### Requirements
 - Java 1.7+
 - log4j 1.2 (if you want to use our log4j functionality)
 

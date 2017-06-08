@@ -1,0 +1,21 @@
+language: java
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+
+branches:
+  only:
+  - master
+  - develop
+
+# command to install dependencies
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true
+
+
+# command to run tests
+script: mvn test
+
+notifications:
+  email: false
+  #Add slack notifications instead when slack comes back up.
+  slack: trakerr:vrFTXvCHJrNvWsMHWg80gL5B

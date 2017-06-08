@@ -1,5 +1,5 @@
 # swagger-java-client
-
+[![Build Status](https://travis-ci.org/trakerr-com/trakerr-java.svg?branch=master)](https://travis-ci.org/trakerr-com/trakerr-java)
 ## Requirements
 
 Building the API client library requires [Maven](https://maven.apache.org/) to be installed.

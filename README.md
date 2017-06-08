@@ -1,4 +1,5 @@
 # Trakerr - Java API client
+[![Build Status](https://travis-ci.org/trakerr-com/trakerr-java.svg?branch=master)](https://travis-ci.org/trakerr-com/trakerr-java)
 
 Get your application events and errors to Trakerr via the *Trakerr API*.
 

@@ -9,7 +9,7 @@ branches:
   - develop
 
 # command to install dependencies
-#install:
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true
 
 
 # command to run tests

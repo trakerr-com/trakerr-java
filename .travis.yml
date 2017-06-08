@@ -3,10 +3,10 @@ jdk:
   - oraclejdk8
   - oraclejdk7
 
+#All pull requests are built. Commits on the following branches are built:
 branches:
   only:
   - master
-  - develop
 
 # command to install dependencies
 install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true

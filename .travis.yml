@@ -9,9 +9,9 @@ branches:
   - develop
 
 # command to install dependencies
-# Make sure to change the branch name if you're not making a PR off the develop branch.
-install: 
-  - "pip install git+https://github.com/trakerr-com/trakerr-python.git"
+#install:
+
+
 # command to run tests
 script: mvn test
 
